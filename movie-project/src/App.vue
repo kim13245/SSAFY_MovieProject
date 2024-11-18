@@ -1,14 +1,20 @@
 <template>
+  <head>
+
+  </head>
   <div>
     <Nav />
+    <RouterView />
   </div>
-</template>
+  
+  </template>
 
 <script setup>
 // nav 가져오기
+import { RouterLink, RouterView } from 'vue-router';
 import Nav from './components/Nav.vue';
 
-
+// slide
 </script>
 
 <style scoped>

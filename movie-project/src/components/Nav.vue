@@ -10,19 +10,19 @@
                     </div>
                 </li>
                 <li>
-                    <RouterLink :to="{name:'home'}">홈</RouterLink>
+                    <RouterLink :to="{name:'home'}" class="navTag">홈</RouterLink>
                 </li>
                 <li>
-                    <RouterLink :to="{name:'mind'}">감정 추천</RouterLink>
+                    <RouterLink :to="{name:'mind'}" class="navTag">감정 추천</RouterLink>
                 </li>
                 <li>
-                    <RouterLink :to="{name:'moviesearch'}">영화 검색</RouterLink>
+                    <RouterLink :to="{name:'moviesearch'}" class="navTag">영화 검색</RouterLink>
                 </li>
                 <li>
-                    <RouterLink :to="{name:'comunity'}">커뮤니티</RouterLink>
+                    <RouterLink :to="{name:'comunity'}" class="navTag">커뮤니티</RouterLink>
                 </li>
                 <li>
-                    <RouterLink :to="{name:'profile', params:{ user_id: userId || 1 } }">마이 프로필</RouterLink>
+                    <RouterLink :to="{name:'profile', params:{ user_id: userId || 1 } }" class="navTag">마이 프로필</RouterLink>
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
@@ -59,7 +59,13 @@ nav {
 a {
     font-size: 1em;
     font-weight: 400;
-    color: #141414;
+    color: #656565;
+    transition: color 0.3s ease; /* 색상 변경을 부드럽게 0.3초 동안 */
+}
+
+.navTag:hover {
+    color: #222; /* 마우스를 올렸을 때 변경할 색상 (예: 토마토색) */
+    font-weight: 600;
 }
 
 .img {
@@ -77,7 +83,7 @@ ul {
     margin: 0;
     padding: 0;
     gap: 2em; /* 항목 간 간격 (선택 사항) */
-    grid-column: 2 / 12; /* 2번째 칸부터 12번째 칸까지 차지 */
+    grid-column: 4 / 10; /* 2번째 칸부터 12번째 칸까지 차지 */
     width: 100%;
 }
 
@@ -90,13 +96,32 @@ ul {
 .button {
     border: 1px solid #7e7e7e;
     padding: 0.3em;
-    width: 130px;
+    width: 110px;
     text-align: center;
     margin-left: 1em;
     border-radius: 8px;
     color: #5e5e64;
 }
-.SignUp {
-    /* background-color: #acacb0 !important; */
+.button:hover {
+    background-color:#acacac ;
+    color: white;
+}
+.button:hover a {
+    color: white; /* 호버 시 텍스트 색상 변경 */
+}
+
+
+
+
+
+
+
+
+/* 반응형 작업 */
+@media screen and (max-width: 1920px) {
+    ul {
+        grid-column: 3 / 11; /* 2번째 칸부터 12번째 칸까지 차지 */
+        gap: 1em; /* 항목 간 간격 (선택 사항) */
+    }
 }
 </style>
