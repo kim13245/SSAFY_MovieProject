@@ -24,6 +24,7 @@ class Cast(models.Model):
 
 
 class Genre(models.Model):
+    id = models.IntegerField(primary_key=True) # TMDB 장르 ID
     name = models.CharField(max_length=100)  # 장르 이름
 
 
@@ -38,7 +39,7 @@ class Movie(models.Model):
     original_title = models.CharField(max_length=100, null=True, blank=True)  # 원제목
     release_date = models.DateField(null=True, blank=True)  # 개봉일
     overview = models.TextField(null=True, blank=True)  # 줄거리
-    runtime = models.TimeField(null=True, blank=True)  # 영화 런타임
+    runtime = models.IntegerField(null=True, blank=True)  # 영화 런타임
     popularity = models.FloatField(null=True, blank=True)  # 인기 점수
     vote_average = models.FloatField(null=True, blank=True)  # 평균 평점
     vote_count = models.IntegerField(default=0)  # 평점 투표 수
