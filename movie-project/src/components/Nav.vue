@@ -26,11 +26,18 @@
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
-                    <div class="button">
-                        <RouterLink :to="{name:'login'}">로그인</RouterLink>
+                    <div v-if="!isLoggedIn">
+                        <div class="button">
+                            <RouterLink :to="{name:'login'}">로그인</RouterLink>
+                        </div>
+                        <div class="button SignUp">
+                            <a href="">회원가입</a>
+                        </div>
                     </div>
-                    <div class="button SignUp">
-                        <a href="">회원가입</a>
+                    <div v-else>
+                        <div class="button">
+                            <RouterLink :to="{name:'login'}">로그아웃</RouterLink>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -39,7 +46,30 @@
 </template>
 
 <script setup>
+import { useMovieStore } from '@/stores/movie';
+import { onMounted,ref,computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import axios from 'axios';
+const store = useMovieStore()
+
+// 로그인 상태 체크!
+// 페이지 로드 시 로그인 상태 확인
+const isLoggedIn = computed(() => !!store.Token)
+
+// 로그아웃
+const logout = function() {
+    axios ({
+        method:'delete',
+        url:'http://127.0.0.1:8000/api/v1/accounts/logout/',
+    }).then((res) => {
+        console.log('로그아웃')
+    }).catch((err) => {
+        console.error(err)
+    })
+    store.Token = null
+    alert('로그아웃 되었습니다.')
+}
+
 </script>
 
 <style scoped>
