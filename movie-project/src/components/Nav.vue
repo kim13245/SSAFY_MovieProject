@@ -33,7 +33,7 @@
                             <RouterLink :to="{name:'login'}">로그인</RouterLink>
                         </div>
                         <div class="button SignUp">
-                            <a href="">회원가입</a>
+                            <RouterLink :to="{name:'signup'}">회원가입</RouterLink>
                         </div>
                     </div>
                     <div v-else>
