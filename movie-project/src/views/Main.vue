@@ -47,6 +47,9 @@
                 </p>
                 <div class="today-movie-button">
                     <a href="">지금 체험하기</a>
+                    <form @submit.prevent="sibal">
+                        <button>click</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -68,7 +71,25 @@ import 'slick-carousel';
 import { useMovieStore } from '@/stores/movie';
 import MoviePost from '@/components/Main/moviePost.vue';
 import BestMovie from '@/components/Main/bestMovie.vue';
+import axios from 'axios';
 
+
+const sibal = function() {
+    axios({
+        method:'post',
+        url:'http://127.0.0.1:8000/api/v1/accounts/register/',
+        data:{
+            username:'admin2',
+            password:'a12341234!',
+            email:'sibal@sibal.com'
+        }
+    }).then((res) => {
+        console.log(res.data)
+        console.log('check')
+    }).catch((err) => {
+        console.error(err)
+    })
+}
 
 // 영화 리스트 들고오기
 const store = useMovieStore()

@@ -21,8 +21,10 @@
                 <li>
                     <RouterLink :to="{name:'comunity'}" class="navTag">커뮤니티</RouterLink>
                 </li>
-                <li>
-                    <RouterLink :to="{name:'profile', params:{ user_id: userId || 1 } }" class="navTag">마이 프로필</RouterLink>
+                <!-- 로그인 이후에 보임 -->
+                 <!-- 파라미터 지우기 -->
+                <li v-if="isLoggedIn">
+                    <RouterLink :to="{name:'profile', params:{ user_id: userid } }" class="navTag">마이 프로필</RouterLink>
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
@@ -35,8 +37,8 @@
                         </div>
                     </div>
                     <div v-else>
-                        <div class="button">
-                            <RouterLink :to="{name:'login'}">로그아웃</RouterLink>
+                        <div class="button" @click="logout">
+                            <RouterLink :to="{name:'home'}">로그아웃</RouterLink>
                         </div>
                     </div>
                 </li>
@@ -58,17 +60,30 @@ const isLoggedIn = computed(() => !!store.Token)
 
 // 로그아웃
 const logout = function() {
-    axios ({
+    // store.Token = null
+    // console.log(store.Token)
+    // alert('로그아웃 되었습니다.')
+    axios({
         method:'delete',
         url:'http://127.0.0.1:8000/api/v1/accounts/logout/',
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
     }).then((res) => {
-        console.log('로그아웃')
+        alert('로그아웃 성공')
+        console.log('check')
+        router.push({name:'home'})
+        store.Token = null
     }).catch((err) => {
-        console.error(err)
+        console.log(err)
+        store.Token = null
     })
-    store.Token = null
-    alert('로그아웃 되었습니다.')
 }
+
+//userId
+const userid = store.userId
+
+// 
 
 </script>
 

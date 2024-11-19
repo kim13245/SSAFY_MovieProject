@@ -68,5 +68,26 @@ export const useMovieStore = defineStore('movie', () => {
     }
   }
 
-  return {movieList, apiMovie, apimovieBest,movieBestList, Token}
+
+  //유저 정보 저장
+  const username = ref(null)
+  const userId = ref(null)
+  
+  const getUserId = function() {
+    axios({
+      method:'get',
+      url:'http://127.0.0.1:8000/api/v1/accounts/logout/',
+      headers:{
+        'Authorization': Token.value
+      }
+    }).then((res) => {
+      console.log('성공')
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+
+  return {movieList, apiMovie, apimovieBest,movieBestList, Token, getUserId, username, userId}
 }, {persist:true})
