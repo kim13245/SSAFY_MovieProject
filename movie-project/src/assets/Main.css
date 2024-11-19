@@ -1,3 +1,4 @@
+
 /* 기본 초기화 */
 * {
     margin: 0;
@@ -33,11 +34,11 @@ html {
     line-height: 1.6;
   }
   
-  body {
-    background-color: #f9f9f9; /* 배경색 */
-    color: #222; /* 기본 글자색 */
-  }
-  
+body {
+  background-color: #f9f9f9; /* 배경색 */
+  color: #050505; /* 기본 글자색 */
+}
+
 
 
 
@@ -49,20 +50,20 @@ html {
     display: none !important;
   }
   
-  /* 가운데 정렬 */
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  /* 여백 조정 */
-  .mt-1 { margin-top: 1rem; }
-  .mb-1 { margin-bottom: 1rem; }
-  .ml-1 { margin-left: 1rem; }
-  .mr-1 { margin-right: 1rem; }
-  .p-1 { padding: 1rem; }
-  
+/* 가운데 정렬 */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 여백 조정 */
+.mt-1 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 1rem; }
+.ml-1 { margin-left: 1rem; }
+.mr-1 { margin-right: 1rem; }
+.p-1 { padding: 1rem; }
+
 
 
   /* 색상 값 정리 
@@ -72,10 +73,13 @@ html {
   --primary-color: #007bff; /* 주요 색상 */
   --secondary-color: #6c757d;
   --background-color: #f8f9fa;
-  --text-color: #343a40;
+  --text-color: #050505;
 }
 
 body {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+
+
+
