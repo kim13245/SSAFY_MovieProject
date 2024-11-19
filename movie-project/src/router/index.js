@@ -1,4 +1,5 @@
 import Comunity from '@/views/Comunity.vue'
+import Login from '@/views/Login.vue'
 import Main from '@/views/Main.vue'
 import MindCollection from '@/views/MindCollection.vue'
 import MovieDetail from '@/views/MovieDetail.vue'
@@ -40,6 +41,11 @@ const router = createRouter({
       name:'comunity',
       component:Comunity
     },
+    {
+      path:'/Login',
+      name:'login',
+      component:Login,
+    }
 
   ],
 })

@@ -27,7 +27,7 @@
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
                     <div class="button">
-                        <a href="">로그인</a>
+                        <RouterLink :to="{name:'login'}">로그인</RouterLink>
                     </div>
                     <div class="button SignUp">
                         <a href="">회원가입</a>
