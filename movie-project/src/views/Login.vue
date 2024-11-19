@@ -34,12 +34,16 @@ const password = ref(null)
 
 const LoginCheck = function() {
     axios ({
-        method:'post`',
+        method:'post',
         url:'http://127.0.0.1:8000/api/v1/accounts/login/',
         data: {
             username:username.value,
             password:password.value
-        }
+        },
+        headers: {
+        'Content-Type': 'application/json',  // 헤더 추가
+        
+        },    
     }).then((res) => {
         const token = res.data.token
         console.log('성공')
