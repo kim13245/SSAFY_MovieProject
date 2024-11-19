@@ -24,12 +24,26 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 
 const username = ref(null)
 const password = ref(null)
 
 const LoginCheck = function() {
-    
+    axios ({
+        method:'get',
+        url:'http://127.0.0.1:8000/api/v1/accounts/login/',
+        data: {
+            username:username.value,
+            password:password.value
+        }
+    }).then((res) => {
+        const token = res.data.token
+        console.log(token)
+        console.log('성공')
+    }).catch((err) => {
+        console.log('실패:',err)
+    })
 }
 
 </script>
