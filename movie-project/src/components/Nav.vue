@@ -28,7 +28,7 @@
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
-                    <div v-if="!isLoggedIn">
+                    <div v-if="!isLoggedIn" class="li_center">
                         <div class="button">
                             <RouterLink :to="{name:'login'}">로그인</RouterLink>
                         </div>
