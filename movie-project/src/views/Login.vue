@@ -25,7 +25,10 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-
+import { useMovieStore } from '@/stores/movie';
+import { useRouter } from 'vue-router';
+const store = useMovieStore()
+const router = useRouter()
 const username = ref(null)
 const password = ref(null)
 
@@ -39,8 +42,9 @@ const LoginCheck = function() {
         }
     }).then((res) => {
         const token = res.data.token
-        console.log(token)
         console.log('성공')
+        store.Token = res.data.token
+        router.push({name:'home'})
     }).catch((err) => {
         console.log('실패:',err)
     })

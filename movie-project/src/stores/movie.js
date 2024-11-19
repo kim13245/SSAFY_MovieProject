@@ -5,6 +5,7 @@ const END_POINT = 'https://api.themoviedb.org/3'
 const API_KEY = '421615aa6350c166650b4d15fdd09550'
 
 export const useMovieStore = defineStore('movie', () => {
+  const Token = ref(null)
   const movieList = ref([])
   const countCheck = ref(0)
   const currentPage = ref(1)
@@ -67,5 +68,5 @@ export const useMovieStore = defineStore('movie', () => {
     }
   }
 
-  return {movieList, apiMovie, apimovieBest,movieBestList}
+  return {movieList, apiMovie, apimovieBest,movieBestList, Token}
 }, {persist:true})
