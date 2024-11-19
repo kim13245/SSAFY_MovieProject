@@ -11,3 +11,4 @@ django.setup()
 # dumpdata 실행
 with open('movie_data.json', 'w', encoding='utf-8') as f:
     call_command('dumpdata', 'movies', indent=4, stdout=f)
+

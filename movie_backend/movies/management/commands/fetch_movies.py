@@ -3,6 +3,8 @@ from django.core.management.base import BaseCommand
 from movies.models import Genre, Movie, Cast, Crew, Person
 from movies.get_data import get_genres, get_movies_by_genre, get_movie_details, get_cast_crew, get_person_details
 
+# 다 하고 dumbdata
+# python manage.py dumpdata movies --indent 4 > movies_data.json
 
 class Command(BaseCommand):
     # Command(BaseCommand): **커스텀 관리 명령어(Management Command)**를 작성할 때 사용하는 기본 클래스

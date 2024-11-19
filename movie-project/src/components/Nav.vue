@@ -21,16 +21,25 @@
                 <li>
                     <RouterLink :to="{name:'comunity'}" class="navTag">커뮤니티</RouterLink>
                 </li>
-                <li>
-                    <RouterLink :to="{name:'profile', params:{ user_id: userId || 1 } }" class="navTag">마이 프로필</RouterLink>
+                <!-- 로그인 이후에 보임 -->
+                 <!-- 파라미터 지우기 -->
+                <li v-if="isLoggedIn">
+                    <RouterLink :to="{name:'profile', params:{ user_id: userid } }" class="navTag">마이 프로필</RouterLink>
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
-                    <div class="button">
-                        <a href="">로그인</a>
+                    <div v-if="!isLoggedIn">
+                        <div class="button">
+                            <RouterLink :to="{name:'login'}">로그인</RouterLink>
+                        </div>
+                        <div class="button SignUp">
+                            <RouterLink :to="{name:'signup'}">회원가입</RouterLink>
+                        </div>
                     </div>
-                    <div class="button SignUp">
-                        <a href="">회원가입</a>
+                    <div v-else>
+                        <div class="button" @click="logout">
+                            <RouterLink :to="{name:'home'}">로그아웃</RouterLink>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -39,7 +48,43 @@
 </template>
 
 <script setup>
+import { useMovieStore } from '@/stores/movie';
+import { onMounted,ref,computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import axios from 'axios';
+const store = useMovieStore()
+
+// 로그인 상태 체크!
+// 페이지 로드 시 로그인 상태 확인
+const isLoggedIn = computed(() => !!store.Token)
+
+// 로그아웃
+const logout = function() {
+    // store.Token = null
+    // console.log(store.Token)
+    // alert('로그아웃 되었습니다.')
+    axios({
+        method:'delete',
+        url:'http://127.0.0.1:8000/api/v1/accounts/logout/',
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
+    }).then((res) => {
+        alert('로그아웃 성공')
+        console.log('check')
+        router.push({name:'home'})
+        store.Token = null
+    }).catch((err) => {
+        console.log(err)
+        store.Token = null
+    })
+}
+
+//userId
+const userid = store.userId
+
+// 
+
 </script>
 
 <style scoped>

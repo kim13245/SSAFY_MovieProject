@@ -15,9 +15,7 @@
             <div class="week-movie-content">
                 <div class="main-slider">
                     <div class="slider">
-                        <div><img src="@/assets/logo/movietest.jpg" alt="Image 1"></div>
-                        <div><img src="@/assets/logo/movietest.jpg" alt="Image 2"></div>
-                        <div><img src="@/assets/logo/movietest.jpg" alt="Image 3"></div>
+                        <BestMovie v-for="movie in store.movieBestList" :key="movie.id" :movie="movie"/>
                     </div>
                     <!-- 태그 정의 후  임의의 클래스를 지정한다.-->
                     <div class="indicaotr">
@@ -30,8 +28,12 @@
         
         <div class="front-movie">
             <div class="week-movie-title">
-                <h1>개봉 예정작</h1>   
+                <h1>개봉 예정작</h1>
             </div>
+            <!-- 무비 리스트 부분 -->
+            <div class="front-movie-list">
+                <MoviePost v-for="movie in store.movieList" :key="movie.id" :movie="movie" class="front-movie-list-item"/>
+            </div>   
         </div>
 
 
@@ -45,6 +47,9 @@
                 </p>
                 <div class="today-movie-button">
                     <a href="">지금 체험하기</a>
+                    <form @submit.prevent="sibal">
+                        <button>click</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -60,26 +65,60 @@
 
 <script setup>
 
-import { onMounted } from 'vue';
+import { onMounted, nextTick } from 'vue';
 import $ from 'jquery';
 import 'slick-carousel';
+import { useMovieStore } from '@/stores/movie';
+import MoviePost from '@/components/Main/moviePost.vue';
+import BestMovie from '@/components/Main/bestMovie.vue';
+import axios from 'axios';
 
-onMounted(() => {
-  // 슬라이더 초기화
-  $('.slider').slick({
-    infinite: true,        // 무한 루프
-    slidesToShow: 1,       // 한 번에 보일 슬라이드 수
-    slidesToScroll: 1,     // 한 번에 스크롤 될 슬라이드 수
-    autoplay: true,        // 자동 슬라이드
-    autoplaySpeed: 4000,   // 자동 슬라이드 간격 (2초)
-    // arrows: true,          // 좌우 화살표 표시
-    dots: true,            // 슬라이드 밑에 점 표시
 
-     // 지정한 클래스에 맞게 값을 지정한다.
-    prevArrow : $('.prevArrow'), 
-    nextArrow : $('.nextArrow'), 
-  });
-});
+const sibal = function() {
+    axios({
+        method:'post',
+        url:'http://127.0.0.1:8000/api/v1/accounts/register/',
+        data:{
+            username:'admin2',
+            password:'a12341234!',
+            email:'sibal@sibal.com'
+        }
+    }).then((res) => {
+        console.log(res.data)
+        console.log('check')
+    }).catch((err) => {
+        console.error(err)
+    })
+}
+
+// 영화 리스트 들고오기
+const store = useMovieStore()
+
+
+onMounted(async() => {
+    //비동기 함수로 먼저 api를 먼저 불러오고
+    try{
+        await store.apimovieBest();
+        await store.apiMovie();
+        // 슬라이더 초기화
+        nextTick(() => {
+            // DOM 업데이트 후 슬라이더 초기화
+            $('.slider').slick({
+                infinite: true,        // 무한 루프
+                slidesToShow: 1,       // 한 번에 보일 슬라이드 수
+                slidesToScroll: 1,     // 한 번에 스크롤 될 슬라이드 수
+                autoplay: true,        // 자동 슬라이드
+                autoplaySpeed: 4000,   // 자동 슬라이드 간격 (4초)
+                dots: true,            // 슬라이드 밑에 점 표시
+                // fade: true,            // 전환 효과 추가
+                prevArrow: $('.prevArrow'), 
+                nextArrow: $('.nextArrow'),
+            });
+        });
+    }catch(error) {
+        console.error('Error initializing onMounted:', error);
+    }
+})
 </script>
 
 <style scoped>
@@ -178,6 +217,21 @@ onMounted(() => {
     border-radius: 15px;
 }
 
+/* movie 리스트 정렬 부분 */
+.front-movie-list {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 1em;
+    row-gap: 2.5em; /* 상하 간격 */
+
+}
+.front-movie-list-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+}
+
 
 
 /* 리뷰 추천 */
@@ -189,12 +243,6 @@ onMounted(() => {
 
 
 
-
-
-
-
-
-
 /* 슬라이드 이미지 위에 그라데이션 추가 */
 .slider {
     margin-top: 20px;
@@ -203,17 +251,7 @@ onMounted(() => {
     overflow: hidden;    /* 슬라이더 내용이 라운드 안에 잘리도록 설정 */
 }
 
-.slider div::before {
-    content: ""; /* 가상 요소 */
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0));
-    pointer-events: none; /* 마우스 이벤트를 차단하여 이미지 클릭 가능하도록 설정 */
-    z-index: 1; /* 이미지를 덮는 오버레이 */
-}
+
 .slider div {
     height: 352px;
     border-radius: 15px;
