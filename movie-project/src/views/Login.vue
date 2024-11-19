@@ -34,7 +34,7 @@ const password = ref(null)
 
 const LoginCheck = function() {
     axios ({
-        method:'get',
+        method:'post',
         url:'http://127.0.0.1:8000/api/v1/accounts/login/',
         data: {
             username:username.value,
