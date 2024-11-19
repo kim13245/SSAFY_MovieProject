@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import User
-
+from django.conf import settings
 
 class Person(models.Model):
     id = models.IntegerField(primary_key=True) # TMDB 인물 ID
@@ -52,3 +52,34 @@ class Movie(models.Model):
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)  # 장르 ID
     cast = models.ManyToManyField('Cast', related_name='movies')  # 출연진
     crew = models.ManyToManyField('Crew', related_name='movies')  # 제작진
+
+
+
+class Community(models.Model):
+    title = models.CharField(max_length=255)  # 제목
+    content = models.TextField()  # 내용
+    movie = models.ForeignKey('movies.Movie', on_delete=models.CASCADE)  # 영화 ID (외래키)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
+
+
+class Comment(models.Model):
+    community = models.ForeignKey('Community', on_delete=models.CASCADE)  # 커뮤니티 ID (외래키)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
+    content = models.TextField()  # 댓글 내용
+
+
+class Review(models.Model):
+    content = models.TextField()  # 리뷰 내용
+    rating = models.FloatField()  # 평점
+    create_review = models.DateTimeField(auto_now_add=True)  # 리뷰 작성일
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
+    movie = models.ForeignKey('movies.Movie', on_delete=models.CASCADE)  # 영화 ID (외래키)
+    emotion = models.ForeignKey('movies.Emotion', on_delete=models.CASCADE)  # 감정 ID (외래키)
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name = 'liked_reviews',
+        blank=True
+    )
+    @property
+    def likes_count(self):
+        return self.likes.count()
