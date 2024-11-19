@@ -7,6 +7,7 @@
                 <div>
                     <span>{{ props.movie.vote_average }}</span>
                 </div>
+                <button @click="handleClick">check</button>
             </div>
         </div>
     </div>
@@ -19,6 +20,13 @@ const props = defineProps({
 
 const Base_URL = 'https://image.tmdb.org/t/p/original'
 let imageUrl = `${Base_URL}${props.movie.backdrop_path}`
+
+// 클릭 이벤트 -> 부모 전달
+const emit = defineEmits(['click'])
+const handleClick = function(event) {
+    event.stopPropagation(); // 클릭 이벤트 전파 방지
+    emit('click',props.movie.id)
+}
 
 </script>
 
@@ -35,6 +43,7 @@ let imageUrl = `${Base_URL}${props.movie.backdrop_path}`
     background-size: cover; /* 배경 이미지를 요소 크기에 맞게 꽉 차게 표시 */
     background-repeat: no-repeat; /* 이미지 반복 방지 */
     background-position: center; /* 이미지가 중앙에 오도록 설정 */
+    pointer-events: auto; /* 클릭 이벤트 활성화 */
 }
 
 

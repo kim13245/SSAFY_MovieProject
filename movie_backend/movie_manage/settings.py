@@ -110,17 +110,46 @@ WSGI_APPLICATION = 'movie_manage.wsgi.application'
 
 DATABASES = {
     'default': {
+    # PostgreSQL
         # 'ENGINE': 'django.db.backends.postgresql',
         # 'NAME': 'emotional_movie_db',
         # 'USER': 'postgres',
         # 'PASSWORD': 'admin11',
         # 'HOST': 'localhost',
         # 'PORT': '5432',
+    # sqlite3
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+'''
+PostgreSQL에서 한자 깨질 때
+- 기존 데이터 디렉토리 (...\Program Files\PostgreSQL\17\data)
+  에서 data 폴더 삭제(필요시 백업)
+- 윈도우 기준 PowerShell 관리자 권한 실행하여 아래 명령어 치기
+  initdb -D "C:\Program Files\PostgreSQL\<버전>\data" --locale=ko_KR.UTF-8 -E UTF8
+- 만약 권한 오류가 뜨면 PowerShell에 다음 명령어 순차적으로 입력하고 다시 initdb 실행
+    - mkdir "C:/Program Files/PostgreSQL/17/data"
+    - icacls "C:/Program Files/PostgreSQL/17/data" /grant Everyone:F /T
 
+CREATE DATABASE emotional_movie_db
+WITH 
+OWNER = postgres
+ENCODING = 'UTF8'
+LC_COLLATE = 'ko_KR.UTF-8'
+LC_CTYPE = 'ko_KR.UTF-8'
+TEMPLATE = template0;
+
+postreSQL의 터미널 psql 간단한 명령어
+
+\l: 현재 서버에 있는 모든 데이터베이스 목록 [조회]
+\c database_name: 지정한 데이터베이스 [접속]
+\d: 현재 데이터베이스에 있는 모든 테이블, 뷰, 시퀀스, 인덱스 등의 목록 [조회]
+\dt: 현재 데이터베이스에 있는 모든 테이블의 목록 [조회]
+\dv: 현재 데이터베이스에 있는 모든 뷰의 목록 [조회]
+\di: 현재 데이터베이스에 있는 모든 인덱스의 목록 [조회]
+\q: psql 클라이언트 [종료]
+'''
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
