@@ -93,8 +93,11 @@ export const useMovieStore = defineStore('movie', () => {
   const MindMoveList = ref(null)
   const getMind = async function(MindName) {
     try {
-      const respons = await axios.get(`http://127.0.0.1:8000/api/v1/accounts/emotion/${MindName}`)
+      const respons = await axios.get(`http://127.0.0.1:8000/api/v1/movies/emotion/${MindName}`)
       MindMoveList.value = respons.data
+      if (MindMoveList.value.length > 20) {
+        MindMoveList.value = MindMoveList.value.splice(0,20)
+      }
     } catch(err) {
       console.error('데이터 불러오기 실패 : ',err)
     }

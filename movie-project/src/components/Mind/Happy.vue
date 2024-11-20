@@ -3,12 +3,32 @@
         <h1>check1</h1>
         <h1>행복한 기분</h1>
     </div>
+    <div class="MovieList" v-if="store.MindMoveList">
+        <MindMoviePoster v-for="movie in store.MindMoveList" :key="movie.id" :movie="movie" class="movie-poster"/>
+    </div>
 </template>
 
 <script setup>
+import { useMovieStore } from '@/stores/movie';
+import { onMounted, ref } from 'vue';
+import MindMoviePoster from './MindMoviePoster.vue';
+
+const store = useMovieStore()
+
+
+onMounted( async () => {
+    await store.getMind('Happy')
+})
 
 </script>
 
 <style scoped>
-
+.MovieList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+.movie-poster {
+    width: 18%;
+}
 </style>
