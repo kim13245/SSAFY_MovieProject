@@ -6,7 +6,13 @@ class MovieListSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('id', 'title', 'poster_path',)
 
+class CastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cast
+        fields = ('name', 'character')
+
 class MovieDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = '__all__'
+
