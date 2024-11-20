@@ -1,9 +1,9 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+
 const END_POINT = 'https://api.themoviedb.org/3'
 const API_KEY = '421615aa6350c166650b4d15fdd09550'
-
 export const useMovieStore = defineStore('movie', () => {
   const Token = ref(null)
   const movieList = ref([])
