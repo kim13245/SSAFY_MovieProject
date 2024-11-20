@@ -76,6 +76,7 @@ class SignoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request):
+        
         user = request.user
 
         try:
