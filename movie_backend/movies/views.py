@@ -22,33 +22,33 @@ class MovieDetailView(APIView):
             return Response(serializer.data)
         else:
             new_movie = get_movie_details(movie_id)
+            genre_id = new_movie.get('genres')[0].get('id') if new_movie.get('genres') else None
             movie = Movie.objects.create(
-                id=movie_id, 
-                    defaults={
-                        'title': new_movie['title'],
-                        'original_title': new_movie.get('original_title'),
-                        'release_date': new_movie.get('release_date'),
-                        'overview': new_movie.get('overview'),
-                        'runtime': new_movie.get('runtime'),
-                        'popularity': new_movie.get('popularity'),
-                        'vote_average': new_movie.get('vote_average'),
-                        'vote_count': new_movie.get('vote_count'),
-                        'poster_path': new_movie.get('poster_path'),
-                        'backdrop_path': new_movie.get('backdrop_path'),
-                        'budget': new_movie.get('budget', 0),
-                        'revenue': new_movie.get('revenue', 0),
-                        'adult': new_movie.get('adult', False),
-                        'status': new_movie.get('status'),
-                        'homepage': new_movie.get('homepage'),
-                        'imdb_id': new_movie.get('imdb_id'),
-                        'tagline': new_movie.get('tagline'),
-                        'origin_country': new_movie.get('production_countries', [{}])[0].get('iso_3166_1') 
-                                            if new_movie.get('production_countries') else None,
-                        'spoken_languages': new_movie.get('spoken_languages', [{}])[0].get('english_name')
-                                            if new_movie.get('spoken_languages') else None,
-                        'genre': new_movie.get('genres')[0].get('id'),  # 연결된 장르
-                    }
+            id=movie_id,
+            title=new_movie['title'],
+            original_title=new_movie.get('original_title'),
+            release_date=new_movie.get('release_date'),
+            overview=new_movie.get('overview'),
+            runtime=new_movie.get('runtime'),
+            popularity=new_movie.get('popularity'),
+            vote_average=new_movie.get('vote_average'),
+            vote_count=new_movie.get('vote_count'),
+            poster_path=new_movie.get('poster_path'),
+            backdrop_path=new_movie.get('backdrop_path'),
+            budget=new_movie.get('budget', 0),
+            revenue=new_movie.get('revenue', 0),
+            adult=new_movie.get('adult', False),
+            status=new_movie.get('status'),
+            homepage=new_movie.get('homepage'),
+            imdb_id=new_movie.get('imdb_id'),
+            tagline=new_movie.get('tagline'),
+            origin_country=new_movie.get('production_countries', [{}])[0].get('iso_3166_1')
+                            if new_movie.get('production_countries') else None,
+            spoken_languages=new_movie.get('spoken_languages', [{}])[0].get('english_name')
+                            if new_movie.get('spoken_languages') else None,
+            genre = Genre.objects.get_or_create(id=genre_id)[0] if genre_id else None
             )
+        
             credits_data = get_cast_crew(movie_id)
             for cast_data in credits_data.get('cast', []):
                 # 배우 정보 DB 저장
