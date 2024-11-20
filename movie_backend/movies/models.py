@@ -37,6 +37,7 @@ class Emotion(models.Model):
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)  # TMDB의 영화 ID를 기본 키로 사용
     title = models.CharField(max_length=100)  # 제목
+    belong_to_collection = models.CharField(max_length=100, null=True, blank=True) # 시리즈
     original_title = models.CharField(max_length=100, null=True, blank=True)  # 원제목
     release_date = models.DateField(null=True, blank=True)  # 개봉일
     overview = models.TextField(null=True, blank=True)  # 줄거리
@@ -49,7 +50,13 @@ class Movie(models.Model):
     budget = models.BigIntegerField(null=True, blank=True)  # 제작비
     revenue = models.BigIntegerField(null=True, blank=True)  # 매출
     adult = models.BooleanField(default=False)  # 성인 영화 여부
+    status = models.CharField(max_length=50, null=True, blank=True) # 개봉 상태
+    homepage = models.URLField(null=True, blank=True)
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)  # 장르 ID
+    imdb_id = models.CharField(max_length=15, null=True, blank=True) # imdb 아이디
+    tagline = models.CharField(max_length=255, null=True, blank=True) # 태그라인
+    origin_country = models.CharField(max_length=100, null=True, blank=True) # 제작 국가
+    spoken_languages = models.CharField(max_length=100, null=True, blank=True) # 영화 언어
     cast = models.ManyToManyField('Cast', related_name='movies')  # 출연진
     crew = models.ManyToManyField('Crew', related_name='movies')  # 제작진
 

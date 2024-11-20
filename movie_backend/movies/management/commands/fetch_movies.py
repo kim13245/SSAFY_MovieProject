@@ -71,7 +71,15 @@ class Command(BaseCommand):
                         'budget': movie_details.get('budget', 0),
                         'revenue': movie_details.get('revenue', 0),
                         'adult': movie_details.get('adult', False),
-                        'genre': genre,  # 연결된 장르
+                        'status': movie_details.get('status'),
+                        'homepage': movie_details.get('homepage'),
+                        'imdb_id': movie_details.get('imdb_id'),
+                        'tagline': movie_details.get('tagline'),
+                        'origin_country': movie_details.get('production_countries', [{}])[0].get('iso_3166_1') 
+                                            if movie_details.get('production_countries') else None,
+                        'spoken_languages': movie_details.get('spoken_languages', [{}])[0].get('english_name')
+                                            if movie_details.get('spoken_languages') else None,
+                        'genre': genre,  # 연결된 장르 객체
                     }
                 )
 
