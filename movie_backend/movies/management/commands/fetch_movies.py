@@ -39,15 +39,15 @@ class Command(BaseCommand):
             # 장르별로 최대 20개의 영화 가져오기
             time.sleep(0.25)
             movies_data = get_movies_by_genre(genre_id=genre.id, page=1)
-            movies_to_fetch = movies_data
 
-            for movie_data in movies_to_fetch:
+            for movie_data in movies_data:
                 movie_id = movie_data['id']
 
                 # 저장된 영화인지 확인
                 if Movie.objects.filter(id=movie_id).exists():
                     self.stdout.write(
                         f"{movie_data['title']}({movie_id})는 이미 저장되어 있습니다.")
+                    
                     continue
 
                 # 3-1. 영화 상세 정보 가져오기 (디테일 요청)
@@ -78,10 +78,17 @@ class Command(BaseCommand):
                         'origin_country': movie_details.get('production_countries', [{}])[0].get('iso_3166_1') 
                                             if movie_details.get('production_countries') else None,
                         'spoken_languages': movie_details.get('spoken_languages', [{}])[0].get('english_name')
-                                            if movie_details.get('spoken_languages') else None,
-                        'genre': genre,  # 연결된 장르 객체
+                                            if movie_details.get('spoken_languages') else None, 
                     }
                 )
+
+                genre_ids = [g['id'] for g in movie_details.get('genres', [])]  # TMDB 장르 ID 가져오기
+                for genre_id in genre_ids:
+                    try:
+                        genre = Genre.objects.get(id=genre_id)
+                        movie.genre.add(genre)  # ManyToMany 관계 추가
+                    except Genre.DoesNotExist:
+                        self.stderr.write(f"장르 ID {genre_id}가 DB에 없습니다.")
 
                 # 4. 출연진 목록 가져와서 DB 저장
                 time.sleep(0.25)

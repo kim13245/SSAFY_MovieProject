@@ -21,34 +21,37 @@ class MovieDetailView(APIView):
             serializer = MovieDetailSerializer(movie)
             return Response(serializer.data)
         else:
+            print('현재 선택한 영화가 DB에 없음')
             new_movie = get_movie_details(movie_id)
-            genre_id = new_movie.get('genres')[0].get('id') if new_movie.get('genres') else None
+            genre_ids = [g['id'] for g in new_movie.get('genre', [])]
             movie = Movie.objects.create(
-            id=movie_id,
-            title=new_movie['title'],
-            original_title=new_movie.get('original_title'),
-            release_date=new_movie.get('release_date'),
-            overview=new_movie.get('overview'),
-            runtime=new_movie.get('runtime'),
-            popularity=new_movie.get('popularity'),
-            vote_average=new_movie.get('vote_average'),
-            vote_count=new_movie.get('vote_count'),
-            poster_path=new_movie.get('poster_path'),
-            backdrop_path=new_movie.get('backdrop_path'),
-            budget=new_movie.get('budget', 0),
-            revenue=new_movie.get('revenue', 0),
-            adult=new_movie.get('adult', False),
-            status=new_movie.get('status'),
-            homepage=new_movie.get('homepage'),
-            imdb_id=new_movie.get('imdb_id'),
-            tagline=new_movie.get('tagline'),
-            origin_country=new_movie.get('production_countries', [{}])[0].get('iso_3166_1')
-                            if new_movie.get('production_countries') else None,
-            spoken_languages=new_movie.get('spoken_languages', [{}])[0].get('english_name')
-                            if new_movie.get('spoken_languages') else None,
-            genre = Genre.objects.get_or_create(id=genre_id)[0] if genre_id else None
+                id=movie_id,
+                title=new_movie['title'],
+                original_title=new_movie.get('original_title'),
+                release_date=new_movie.get('release_date'),
+                overview=new_movie.get('overview'),
+                runtime=new_movie.get('runtime'),
+                popularity=new_movie.get('popularity'),
+                vote_average=new_movie.get('vote_average'),
+                vote_count=new_movie.get('vote_count'),
+                poster_path=new_movie.get('poster_path'),
+                backdrop_path=new_movie.get('backdrop_path'),
+                budget=new_movie.get('budget', 0),
+                revenue=new_movie.get('revenue', 0),
+                adult=new_movie.get('adult', False),
+                status=new_movie.get('status'),
+                homepage=new_movie.get('homepage'),
+                imdb_id=new_movie.get('imdb_id'),
+                tagline=new_movie.get('tagline'),
+                origin_country=new_movie.get('production_countries', [{}])[0].get('iso_3166_1')
+                                if new_movie.get('production_countries') else None,
+                spoken_languages=new_movie.get('spoken_languages', [{}])[0].get('english_name')
+                                if new_movie.get('spoken_languages') else None,
             )
-        
+            for genre_id in genre_ids:
+                genre = Genre.objects.get(id=genre_id)
+                movie.genre.add(genre)
+
             credits_data = get_cast_crew(movie_id)
             for cast_data in credits_data.get('cast', []):
                 # 배우 정보 DB 저장
@@ -98,6 +101,16 @@ class MovieDetailView(APIView):
             serializer = MovieDetailSerializer(movie)
             return Response(serializer.data)
         
-# class MovieSearchView(APIView):
-#     def get(self, request):
-#         request.data.title
+class MovieSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('title')
+        movie_data = serch_movie(query)
+        Response(movie_data)
+
+class SelectedEmotionView(APIView):
+    def get(self, request, emotion):
+        genres = Genre.objects.filter(emotions__name = emotion)
+        movies = Movie.objects.filter(genres__in = genres)
+
+        serializer = MovieListSerializer(movies, many=True)
+        return Response(serializer.data)

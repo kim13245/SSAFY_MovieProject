@@ -52,7 +52,7 @@ class Movie(models.Model):
     adult = models.BooleanField(default=False)  # 성인 영화 여부
     status = models.CharField(max_length=50, null=True, blank=True) # 개봉 상태
     homepage = models.URLField(null=True, blank=True)
-    genre = models.ForeignKey('Genre', on_delete=models.CASCADE)  # 장르 ID
+    genre = models.ManyToManyField('Genre', related_name='genre')  # 장르 ID
     imdb_id = models.CharField(max_length=15, null=True, blank=True) # imdb 아이디
     tagline = models.CharField(max_length=255, null=True, blank=True) # 태그라인
     origin_country = models.CharField(max_length=100, null=True, blank=True) # 제작 국가
