@@ -46,6 +46,7 @@
                         <div class="info-box">
                             {{ movie.budget }}
                         </div>
+
                         <!-- <div class="info-box">
                             {{ movie.origin_country[0] }}
                         </div> -->
@@ -80,8 +81,9 @@ const movie = ref(null)
 const END_POINT = 'http://127.0.0.1:8000/api/v1/movies'
 const API_KEY = '421615aa6350c166650b4d15fdd09550'
 const getMovieDetails = async () => {
+
     try {
-        const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`)
+        const response = await axios.get(`${END_POINT}/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`)
         movie.value = response.data
         console.log(movie.value)
     }catch(error) {
