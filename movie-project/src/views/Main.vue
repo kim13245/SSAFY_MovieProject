@@ -15,7 +15,9 @@
             <div class="week-movie-content">
                 <div class="main-slider">
                     <div class="slider">
-                        <BestMovie v-for="movie in store.movieBestList" :key="movie.id" :movie="movie"/>
+                        <div v-for="movie in store.movieBestList" :key="movie.id" >
+                            <BestMovie :movie="movie" @click="handleChildClick"/>
+                        </div>
                     </div>
                     <!-- 태그 정의 후  임의의 클래스를 지정한다.-->
                     <div class="indicaotr">
@@ -68,7 +70,9 @@ import 'slick-carousel';
 import { useMovieStore } from '@/stores/movie';
 import MoviePost from '@/components/Main/moviePost.vue';
 import BestMovie from '@/components/Main/bestMovie.vue';
-
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
 // 영화 리스트 들고오기
 const store = useMovieStore()
@@ -90,6 +94,10 @@ onMounted(async() => {
                 autoplaySpeed: 4000,   // 자동 슬라이드 간격 (4초)
                 dots: true,            // 슬라이드 밑에 점 표시
                 // fade: true,            // 전환 효과 추가
+                draggable: false, // 드래그 비활성화
+                preventClicks: false, // 클릭 이벤트 방지 비활성화
+                preventClicksPropagation: false, // 클릭 이벤트 전파 방지 비활성화
+
                 prevArrow: $('.prevArrow'), 
                 nextArrow: $('.nextArrow'),
             });
@@ -98,6 +106,14 @@ onMounted(async() => {
         console.error('Error initializing onMounted:', error);
     }
 })
+
+// 상세페이지 이동 로직
+
+const handleChildClick = (movieId) => {
+    console.log('Received movie ID:', movieId)
+    router.push({name:'detail', params:{movie_id:movieId}})
+    console.log(1)
+}
 </script>
 
 <style scoped>
@@ -271,6 +287,10 @@ onMounted(async() => {
   right: -2%;
 }
 
+button {
+    z-index: 2;
+    position: relative;
+}
 
 
 

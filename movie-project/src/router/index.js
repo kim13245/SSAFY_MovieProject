@@ -5,6 +5,7 @@ import MindCollection from '@/views/MindCollection.vue'
 import MovieDetail from '@/views/MovieDetail.vue'
 import MovieSearch from '@/views/MovieSearch.vue'
 import Profile from '@/views/Profile.vue'
+import SignUp from '@/views/SignUp.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
@@ -45,6 +46,11 @@ const router = createRouter({
       path:'/Login',
       name:'login',
       component:Login,
+    },
+    {
+      path:'/signUp',
+      name:'signup',
+      component:SignUp,
     }
 
   ],
