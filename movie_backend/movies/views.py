@@ -17,9 +17,14 @@ class MovieListView(APIView):
 class MovieDetailView(APIView):
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
+        credits_data = get_cast_crew(movie_id)
         if movie:
             serializer = MovieDetailSerializer(movie)
-            return Response(serializer.data)
+            response_data = {
+                "movie" : serializer.data,
+                "credits" : credits_data
+            }
+            return Response(response_data)
         else:
             print('현재 선택한 영화가 DB에 없음')
             new_movie = get_movie_details(movie_id)
@@ -52,7 +57,7 @@ class MovieDetailView(APIView):
                 genre = Genre.objects.get(id=genre_id)
                 movie.genre.add(genre)
 
-            credits_data = get_cast_crew(movie_id)
+            
             for cast_data in credits_data.get('cast', []):
                 # 배우 정보 DB 저장
                 person, created = Person.objects.update_or_create(
@@ -99,13 +104,17 @@ class MovieDetailView(APIView):
                 movie.crew.add(crew)
                 
             serializer = MovieDetailSerializer(movie)
-            return Response(serializer.data)
+            response_data = {
+                "movie" : serializer.data,
+                "credits" : credits_data
+            }
+            return Response(response_data)
         
 class MovieSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('title')
         movie_data = serch_movie(query)
-        Response(movie_data)
+        return Response(movie_data)
 
 class SelectedEmotionView(APIView):
     def get(self, request, emotion):
@@ -121,5 +130,4 @@ class CreateReviewView(APIView):
         data = request.data
         content = request.data.content
         rating = request.data.rating
-        
-        
+
