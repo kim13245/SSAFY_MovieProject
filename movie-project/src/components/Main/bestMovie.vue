@@ -7,7 +7,7 @@
                 <div>
                     <span>{{ props.movie.vote_average }}</span>
                 </div>
-                <button @click="handleClick">check</button>
+                <button @click="handleClick" style="cursor: pointer;">check</button>
             </div>
         </div>
     </div>
