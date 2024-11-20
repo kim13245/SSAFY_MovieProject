@@ -105,7 +105,7 @@ class MovieSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('title')
         movie_data = serch_movie(query)
-        Response(movie_data)
+        return Response(movie_data)
 
 class SelectedEmotionView(APIView):
     def get(self, request, emotion):
