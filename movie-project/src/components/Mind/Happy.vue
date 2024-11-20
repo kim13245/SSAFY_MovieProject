@@ -1,0 +1,14 @@
+<template>
+    <div>
+        <h1>check1</h1>
+        <h1>행복한 기분</h1>
+    </div>
+</template>
+
+<script setup>
+
+</script>
+
+<style scoped>
+
+</style>
