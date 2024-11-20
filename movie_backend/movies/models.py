@@ -83,3 +83,8 @@ class Review(models.Model):
     @property
     def likes_count(self):
         return self.likes.count()
+    
+class Collection(models.Model):
+    # user, movie, title, poster_path, vote_average
+    title = models.CharField(max_length=255)
+    
