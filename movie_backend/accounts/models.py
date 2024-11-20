@@ -6,3 +6,4 @@ class User(AbstractUser):
     user_intro = models.CharField(max_length=100, null=True, blank=True)  # 사용자 소개
     # 찜한 영화
     kept_movies = models.ManyToManyField('movies.Movie', related_name='kept_by_users')
+    following = models.ManyToManyField('self', symmetrical=False, related_name='followers')  # 팔로우 관계

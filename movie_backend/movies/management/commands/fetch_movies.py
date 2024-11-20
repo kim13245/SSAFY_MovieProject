@@ -1,7 +1,7 @@
 import time
 from django.core.management.base import BaseCommand
 from movies.models import Genre, Movie, Cast, Crew, Person
-from movies.get_data import get_genres, get_movies_by_genre, get_movie_details, get_cast_crew, get_person_details
+from movies.get_data import get_genres, get_movies_by_genre, get_movie_details, get_cast_crew
 
 # 다 하고 dumbdata
 # python manage.py dumpdata movies --indent 4 > movies_data.json
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 for genre_id in genre_ids:
                     try:
                         genre = Genre.objects.get(id=genre_id)
-                        movie.genre.add(genre)  # ManyToMany 관계 추가
+                        movie.genres.add(genre)  # ManyToMany 관계 추가
                     except Genre.DoesNotExist:
                         self.stderr.write(f"장르 ID {genre_id}가 DB에 없습니다.")
 
@@ -112,7 +112,6 @@ class Command(BaseCommand):
                             defaults={
                                 'character': cast_data.get('character'),
                                 'person': person,
-                                'movie': movie,
                             }
                         )
 
@@ -138,7 +137,6 @@ class Command(BaseCommand):
                             department=crew_data['department'],
                             defaults={
                                 'person': person,
-                                'movie': movie,
                             }
                         )
                         # 해당 영화에 제작진 추가

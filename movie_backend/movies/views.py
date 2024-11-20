@@ -3,14 +3,13 @@ from rest_framework.views import APIView
 from .models import Movie, Cast, Crew, Emotion, Genre, Person
 from .serilalizers import MovieDetailSerializer, MovieListSerializer
 from .get_data import get_movie_details, get_cast_crew, serch_movie
-from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 
 # Create your views here.
 
 
 class MovieListView(APIView):
     def get(self, request):
-        movies = get_list_or_404(Movie)
+        movies = Movie.objects.all()
         serializer = MovieListSerializer(movies, many=True)
         return Response(serializer.data)
 
@@ -28,7 +27,7 @@ class MovieDetailView(APIView):
         else:
             print('현재 선택한 영화가 DB에 없음')
             new_movie = get_movie_details(movie_id)
-            genre_ids = [g['id'] for g in new_movie.get('genre', [])]
+            genre_ids = [genre['id'] for genre in new_movie.get('genres', [])]
             movie = Movie.objects.create(
                 id=movie_id,
                 title=new_movie['title'],
@@ -55,7 +54,7 @@ class MovieDetailView(APIView):
             )
             for genre_id in genre_ids:
                 genre = Genre.objects.get(id=genre_id)
-                movie.genre.add(genre)
+                movie.genres.add(genre)
 
             
             for cast_data in credits_data.get('cast', []):
@@ -75,7 +74,6 @@ class MovieDetailView(APIView):
                     defaults={
                         'character': cast_data.get('character'),
                         'person': person,
-                        'movie': movie,
                     }
                 )
 
@@ -97,7 +95,6 @@ class MovieDetailView(APIView):
                     department=crew_data['department'],
                     defaults={
                         'person': person,
-                        'movie': movie,
                     }
                 )
                 # 해당 영화에 제작진 추가
@@ -124,10 +121,11 @@ class SelectedEmotionView(APIView):
         serializer = MovieListSerializer(movies, many=True)
         return Response(serializer.data)
     
-class CreateReviewView(APIView):
+class ReviewView(APIView):
     def post(self, request):
         user = request.user
         data = request.data
         content = request.data.content
         rating = request.data.rating
+        
 

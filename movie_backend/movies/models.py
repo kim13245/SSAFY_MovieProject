@@ -1,26 +1,20 @@
 from django.db import models
-from accounts.models import User
 from django.conf import settings
 
 class Person(models.Model):
     id = models.IntegerField(primary_key=True) # TMDB 인물 ID
     name = models.TextField(max_length=100)  # 이름
-    # biography = models.TextField(null=True, blank=True)  # 인물 소개
-    # birthday = models.DateField(null=True, blank=True)  # 출생일
-    # deathday = models.DateField(null=True, blank=True)  # 사망일(옵션)
     profile_path = models.TextField(max_length=200, null=True, blank=True)  # 프로필 이미지 경로
 
 
 class Crew(models.Model):
     department = models.CharField(max_length=100)  # 부서 이름
-    movie = models.ForeignKey('Movie', on_delete=models.CASCADE, related_name='crews')  # 영화 ID (외래키)
     person = models.ForeignKey('Person', on_delete=models.CASCADE)  # 인물 ID (외래키)
 
 
 class Cast(models.Model):
     name = models.CharField(max_length=100)  # 배우 이름
     character = models.TextField()  # 배역 이름
-    movie = models.ForeignKey('Movie', on_delete=models.CASCADE, related_name='casts')  # 영화 ID (외래키)
     person = models.ForeignKey('Person', on_delete=models.CASCADE)  # 인물 ID (외래키)
 
 
@@ -52,11 +46,12 @@ class Movie(models.Model):
     adult = models.BooleanField(default=False)  # 성인 영화 여부
     status = models.CharField(max_length=50, null=True, blank=True) # 개봉 상태
     homepage = models.URLField(null=True, blank=True)
-    genre = models.ManyToManyField('Genre', related_name='genre')  # 장르 ID
     imdb_id = models.CharField(max_length=15, null=True, blank=True) # imdb 아이디
     tagline = models.CharField(max_length=255, null=True, blank=True) # 태그라인
     origin_country = models.CharField(max_length=100, null=True, blank=True) # 제작 국가
     spoken_languages = models.CharField(max_length=100, null=True, blank=True) # 영화 언어
+    user_rating = models.FloatField(default=0.0)
+    genres = models.ManyToManyField('Genre', related_name='genres')  # 장르 ID
     cast = models.ManyToManyField('Cast', related_name='movies')  # 출연진
     crew = models.ManyToManyField('Crew', related_name='movies')  # 제작진
 
@@ -77,7 +72,7 @@ class Comment(models.Model):
 
 class Review(models.Model):
     content = models.TextField()  # 리뷰 내용
-    rating = models.FloatField()  # 평점
+    rating = models.FloatField(default=0.0)  # 평점
     create_review = models.DateTimeField(auto_now_add=True)  # 리뷰 작성일
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
     movie = models.ForeignKey('movies.Movie', on_delete=models.CASCADE)  # 영화 ID (외래키)
@@ -94,4 +89,7 @@ class Review(models.Model):
 class Collection(models.Model):
     # user, movie, title, poster_path, vote_average
     title = models.CharField(max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="collections")  # 사용자
+    vote_average = models.FloatField(default = 0.0) # 사용자가 담은 플레이리스트들의 평균 평점
+    movies = models.ManyToManyField('movies.Movie', related_name="collections")  # 여러 영화를 플레이리스트에 추가 가능
     
