@@ -54,7 +54,7 @@
                     저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
                 </p>
                 <div class="today-movie-button">
-                    <a href="">지금 체험하기</a>
+                    <RouterLink :to="mind">지금 체험하기</RouterLink>
                 </div>
             </div>
         </div>

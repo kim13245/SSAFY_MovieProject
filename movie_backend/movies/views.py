@@ -110,7 +110,16 @@ class MovieSearchView(APIView):
 class SelectedEmotionView(APIView):
     def get(self, request, emotion):
         genres = Genre.objects.filter(emotions__name = emotion)
-        movies = Movie.objects.filter(genres__in = genres)
+        movies = Movie.objects.filter(genre__in = genres)
 
         serializer = MovieListSerializer(movies, many=True)
         return Response(serializer.data)
+    
+class CreateReviewView(APIView):
+    def post(self, request):
+        user = request.user
+        data = request.data
+        content = request.data.content
+        rating = request.data.rating
+        
+        
