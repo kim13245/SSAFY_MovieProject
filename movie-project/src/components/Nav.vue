@@ -104,12 +104,12 @@ nav {
 a {
     font-size: 1em;
     font-weight: 400;
-    color: #656565;
+    color: #f8f9fa;
     transition: color 0.3s ease; /* 색상 변경을 부드럽게 0.3초 동안 */
 }
 
 .navTag:hover {
-    color: #222; /* 마우스를 올렸을 때 변경할 색상 (예: 토마토색) */
+    color: #61FBFF; /* 마우스를 올렸을 때 변경할 색상 (예: 토마토색) */
     font-weight: 600;
 }
 
@@ -148,11 +148,11 @@ ul {
     color: #5e5e64;
 }
 .button:hover {
-    background-color:#acacac ;
-    color: white;
+    background-color:#61FBFF ;
+    color: #000D11;
 }
 .button:hover a {
-    color: white; /* 호버 시 텍스트 색상 변경 */
+    color: #000D11; /* 호버 시 텍스트 색상 변경 */
 }
 
 

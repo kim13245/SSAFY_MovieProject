@@ -1,17 +1,6 @@
 <template>
-    <div class="container">
-        <div class="baner-img">
-            <a href="">
-                <img src="@/assets/logo/movietest.jpg" alt="img">
-            </a>
-        </div>
+    <div class="container-all">
         <div class="week-movie">
-            <div class="week-movie-title">
-                <h1>이번주 영화 추천</h1>   
-                <div>
-                    <a href="">더 알아보기</a>
-                </div>
-            </div>
             <div class="week-movie-content">
                 <div class="main-slider">
                     <div class="slider">
@@ -21,47 +10,48 @@
                     </div>
                     <!-- 태그 정의 후  임의의 클래스를 지정한다.-->
                     <div class="indicaotr">
-                        <span class="prevArrow">이전</span>
-                        <span class="nextArrow">다음</span>          
+                        <span class="prevArrow"><img src="@/assets/icon/chevron-left.png" alt="test_img"></span>
+                        <span class="nextArrow"><img src="@/assets/icon/chevron-right.png" alt="test_img"></span>          
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="front-movie">
-            <div class="week-movie-title">
-                <h1>개봉 예정작</h1>
+        <div class="container">
+            <div class="front-movie">
+                <div class="week-movie-title">
+                    <h1>개봉 예정작</h1>
+                </div>
+                <!-- 무비 리스트 부분 -->
+                <div class="front-movie-list">
+                    <MoviePost v-for="movie in store.movieList" 
+                    :key="movie.id" 
+                    :movie="movie" 
+                    class="front-movie-list-item" 
+                    style="cursor: pointer;"
+                    @click="handleChildClick(movie.id)"
+                    />
+                </div>   
             </div>
-            <!-- 무비 리스트 부분 -->
-            <div class="front-movie-list">
-                <MoviePost v-for="movie in store.movieList" 
-                :key="movie.id" 
-                :movie="movie" 
-                class="front-movie-list-item" 
-                style="cursor: pointer;"
-                @click="handleChildClick(movie.id)"
-                />
-            </div>   
-        </div>
-
-
-        <div class="today-movie">
-            <div>
-                <h3>오늘의 당신은</h3>
-                <h1>어떤 기분인가요?</h1>
-                <p>
-                    오늘 하루는 어떤 하루였나요? <br/>
-                    저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
-                </p>
-                <div class="today-movie-button">
-                    <RouterLink :to="mind">지금 체험하기</RouterLink>
+    
+    
+            <div class="today-movie">
+                <div>
+                    <h3>오늘의 당신은</h3>
+                    <h1>어떤 기분인가요?</h1>
+                    <p>
+                        오늘 하루는 어떤 하루였나요? <br/>
+                        저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
+                    </p>
+                    <div class="today-movie-button">
+                        <RouterLink :to="{name:'mind'}">지금 체험하기</RouterLink>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="revew-movie">
-            <div class="week-movie-title">
-                <h1>이런 리뷰 어떤가요?</h1>   
+    
+            <div class="revew-movie">
+                <div class="week-movie-title">
+                    <h1>이런 리뷰 어떤가요?</h1>   
+                </div>
             </div>
         </div>
 
@@ -97,7 +87,7 @@ onMounted(async() => {
                 slidesToShow: 1,       // 한 번에 보일 슬라이드 수
                 slidesToScroll: 1,     // 한 번에 스크롤 될 슬라이드 수
                 autoplay: true,        // 자동 슬라이드
-                autoplaySpeed: 4000,   // 자동 슬라이드 간격 (4초)
+                autoplaySpeed: 6000,   // 자동 슬라이드 간격 (6초)
                 dots: true,            // 슬라이드 밑에 점 표시
                 // fade: true,            // 전환 효과 추가
                 draggable: false, // 드래그 비활성화
@@ -132,42 +122,24 @@ const handleChildClick = (movieId) => {
     width: 100%;
 }
 
-.baner-img {
-    grid-column: 4/10;
-    grid-row: 1;
-
-    margin-top: 2em;
-    height: 120px;
-    overflow: hidden;
-    border-radius: 15px;
-}
-.baner-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
 
 .week-movie {
     grid-column: 4/10;
     grid-row: 2;
 
-    margin-top: 50px;
 }
 .week-movie h1 {
     font-size: 28px;
     font-weight: bold;
 }
 .week-movie-title {
-    display: flex; /* 가로 배치를 위한 Flexbox */
-    align-items: center; /* 세로 정렬을 가운데로 맞춤 */
-    gap: 0.8em; /* 두 요소 간 간격 추가 (선택 사항) */
+    margin-bottom: 1em;
 }
 .week-movie-title div {
     font-size: 0.8em;
     background-color: #B3B3B3;
     color: white;
     padding: 0.5em 0.8em;
-    border-radius: 50px;
 }
 
 
@@ -175,14 +147,11 @@ const handleChildClick = (movieId) => {
     grid-column: 4/10;
     grid-row: 3;
 
-    margin-top: 50px;
 }
 
 
 /* 기분 추천 부분 스타일 */
 .today-movie {
-    
-    
     grid-column: 4/10;
     grid-row: 4;
 
@@ -246,16 +215,14 @@ const handleChildClick = (movieId) => {
 
 /* 슬라이드 이미지 위에 그라데이션 추가 */
 .slider {
-    margin-top: 20px;
-    border-radius: 15px;
+    margin-top: 0;
     position: relative; /* 자식 요소의 절대 위치를 설정할 수 있도록 함 */
     overflow: hidden;    /* 슬라이더 내용이 라운드 안에 잘리도록 설정 */
 }
 
 
 .slider div {
-    height: 352px;
-    border-radius: 15px;
+    height: 752px;
 }
 
 /* slide style */
@@ -269,7 +236,6 @@ const handleChildClick = (movieId) => {
 /* 슬라이더 화살표 스타일 */
 .indicaotr .prevArrow, .indicaotr .nextArrow {
   display: inline-block;
-  background-color:white;
 
   padding: 10px 10px;
   cursor: pointer;
@@ -280,17 +246,16 @@ const handleChildClick = (movieId) => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 자연스러운 그림자 추가 */
 }
 
 /* 왼쪽 버튼 위치 */
 .indicaotr .prevArrow {
-  left: -2%;  
+  left: 2%;  
 }
 
 /* 오른쪽 버튼 위치 */
 .indicaotr .nextArrow {
-  right: -2%;
+  right: 2%;
 }
 
 button {
