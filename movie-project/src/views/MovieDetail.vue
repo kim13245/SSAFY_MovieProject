@@ -9,7 +9,9 @@
                     <div>
                         <h1>{{ movie.title }}</h1>
                         <p>{{ movie.release_date }}</p>
-                        <p>{{ moviegenre.name }}</p>
+                        <div v-for="genre in genreNames" class="genre">
+                            <p>{{genre}}</p>
+                        </div>
                         <div class="movie-title-info-overview">
                             <p>{{ movie.overview }}</p>
                         </div>
@@ -101,28 +103,29 @@ const movieId = route.params.movie_id;
 
 // movie.origin_country는 model에 없음
 const movie = ref(null);
+const credits = ref(null)
 const END_POINT = "http://127.0.0.1:8000/api/v1/movies";
 const API_KEY = "421615aa6350c166650b4d15fdd09550";
 const getMovieDetails = async () => {
   try {
     const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`);
-    movie.value = response.data;
+    movie.value = response.data.movie;
+    credits.value = response.data.credits
     console.log(movie.value);
   } catch (error) {
     console.error(error);
   }
 };
 
-// 장르 선택
-const moviegenreId = computed(() => {
-    return movie.value ? movie.value.genre : null;
-})
 
-// 장르 이름 가져오기
-const moviegenre = computed(() => {
-  return moviegenreId.value && store.genres 
-    ? store.genres.find(genre => genre.id === moviegenreId.value) 
-    : null;
+
+const genreNames = computed(() => {
+  return movie.value.genre
+    .map((id) => {
+      const genre = store.genres.find((g) => g.id === id);
+      return genre ? genre.name : null;
+    })
+    .filter((name) => name !== null);
 });
 
 

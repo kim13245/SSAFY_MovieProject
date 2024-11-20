@@ -53,7 +53,7 @@ img {
     font-size: 0.8em;
 }
 .daytitleSpan {
-    color: rgb(245, 98, 98);
+    color: #61FBFF;
 }
 
 </style>

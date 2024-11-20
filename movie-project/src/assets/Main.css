@@ -72,8 +72,9 @@ body {
    :root {
   --primary-color: #007bff; /* 주요 색상 */
   --secondary-color: #6c757d;
-  --background-color: #f8f9fa;
-  --text-color: #050505;
+  --background-color: #000d11;
+  --text-color: #f8f9fa;
+  --main-color: #61FBFF;
 }
 
 body {
