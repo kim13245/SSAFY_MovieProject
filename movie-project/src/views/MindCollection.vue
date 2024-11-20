@@ -12,28 +12,28 @@
                 </div>
             </div>
             <div class="button">
-                <div @click="checkComponents = 'Angry'">
+                <div @click="checkComponents = 'Depressed'">
                     <span>우울함</span>
                 </div>
-                <div @click="checkComponents = 'Anxious'">
+                <div @click="checkComponents = 'Excited'">
                     <span>설렘</span>
                 </div>
-                <div @click="checkComponents = 'Depressed'">
+                <div @click="checkComponents = 'Happy'">
                     <span>행복한</span>
                 </div>
-                <div @click="checkComponents = 'Excited'">
+                <div @click="checkComponents = 'Relaxed'">
                     <span>편안함</span>
                 </div>
-                <div @click="checkComponents = 'Happy'">
+                <div @click="checkComponents = 'Tired'">
                     <span>지침/피곤함</span>
                 </div>
-                <div @click="checkComponents = 'Helpless'">
+                <div @click="checkComponents = 'Angry'">
                     <span>화남</span>
                 </div>
-                <div @click="checkComponents = 'Relaxed'">
+                <div @click="checkComponents = 'Anxious'">
                     <span>불안함</span>
                 </div>
-                <div @click="checkComponents = 'Tired'">
+                <div @click="checkComponents = 'Helpless'">
                     <span>무기력함</span>
                 </div>
             </div>
