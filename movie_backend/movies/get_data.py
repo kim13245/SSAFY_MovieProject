@@ -60,3 +60,14 @@ def get_person_details(person_id):
     response = requests.get(url, params=params)
     response.raise_for_status()
     return response.json()
+
+def serch_movie(title):
+    url = f"{BASE_URL}/search/movie"
+    params = {
+        'api_key': API_KEY,
+        'query': title,
+        'language': 'ko-KR',
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    return response.json()
