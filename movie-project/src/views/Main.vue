@@ -34,7 +34,13 @@
             </div>
             <!-- 무비 리스트 부분 -->
             <div class="front-movie-list">
-                <MoviePost v-for="movie in store.movieList" :key="movie.id" :movie="movie" class="front-movie-list-item"/>
+                <MoviePost v-for="movie in store.movieList" 
+                :key="movie.id" 
+                :movie="movie" 
+                class="front-movie-list-item" 
+                style="cursor: pointer;"
+                @click="handleChildClick(movie.id)"
+                />
             </div>   
         </div>
 
