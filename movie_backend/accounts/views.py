@@ -44,12 +44,14 @@ class RegisterView(APIView):
         password = request.data.get('password')
         email = request.data.get('email')
 
-        if not username or not password or nickname:
+        if not username or not password or not nickname:
             return Response({"error": "아이디 혹은 패스워드 혹은 프로필 이름 입력이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(username=username).exists():
             return Response({"error": "이미 사용 중인 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email=email).exists():
             return Response({"error": "이미 사용 중인 이메일입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(nickname=nickname).exists():
+            return Response({"error": "이미 사용 중인 프로필 이름입니다."}, status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.create(
             username = username,
             nickname = nickname,
