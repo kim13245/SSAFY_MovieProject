@@ -84,3 +84,4 @@ class SignoutView(APIView):
             return Response({"message": "회원탈퇴 되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"error": f"에러: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        

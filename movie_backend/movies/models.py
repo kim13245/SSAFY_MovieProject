@@ -92,4 +92,3 @@ class Collection(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="collections")  # 사용자
     vote_average = models.FloatField(default = 0.0) # 사용자가 담은 플레이리스트들의 평균 평점
     movies = models.ManyToManyField('movies.Movie', related_name="collections")  # 여러 영화를 플레이리스트에 추가 가능
-    
