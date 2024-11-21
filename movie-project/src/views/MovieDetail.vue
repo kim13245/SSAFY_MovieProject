@@ -8,9 +8,11 @@
                 <div class="movie-title-info">
                     <div>
                         <h1>{{ movie.title }}</h1>
-                        <p>{{ movie.release_date }}</p>
-                        <div v-for="genre in genreNames" class="genre">
-                            <p>{{genre}}</p>
+                        <div class="movie-title-info-detail">
+                            <p class="relase-date" style="margin-right: 0.6em;">{{ year }}.{{ month }}.{{ day }}</p>
+                            <div v-for="genre in genreNames" class="genre">
+                                <p>{{genre}}</p>
+                            </div>
                         </div>
                         <div class="movie-title-info-overview">
                             <p>{{ movie.overview }}</p>
@@ -85,18 +87,26 @@
                     </div>
                 </div>
             </div>
-            <div class="all-comment">
-                <h1>이런 코멘트 어떤가요?</h1>
+            <div class="actor">
+                <h1>출연/제작</h1>
+                <div class="actor-list">
+                    <DetailActor v-for="credit in credits" :key="credit" :credit="credit" class="actor-item"/>
+                </div>
             </div>
+            <!-- <div class="all-comment">
+                <h1>이런 코멘트 어떤가요?</h1>
+            </div> -->
         </div>
     </div>
 </template>
 
 <script setup>
+import DetailActor from "@/components/Detail/DetailActor.vue";
 import { useMovieStore } from "@/stores/movie";
 import axios from "axios";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+
 const store = useMovieStore();
 const route = useRoute();
 const movieId = route.params.movie_id;
@@ -105,22 +115,28 @@ const movieId = route.params.movie_id;
 const movie = ref(null);
 const credits = ref(null)
 const END_POINT = "http://127.0.0.1:8000/api/v1/movies";
-const API_KEY = "421615aa6350c166650b4d15fdd09550";
+
 const getMovieDetails = async () => {
   try {
     const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`);
     movie.value = response.data.movie;
-    credits.value = response.data.credits
+    credits.value = response.data.credits.cast
     console.log(movie.value);
+    console.log(credits.value)
+
+    if (credits.value && credits.value.length > 12) {
+        console.log('slice!')
+      credits.value = credits.value.slice(0, 12); // 0번째부터 10개까지만 자르기
+    }
   } catch (error) {
     console.error(error);
   }
 };
 
 
-
+// 장르 이름 들고오기
 const genreNames = computed(() => {
-  return movie.value.genre
+  return movie.value.genres
     .map((id) => {
       const genre = store.genres.find((g) => g.id === id);
       return genre ? genre.name : null;
@@ -143,6 +159,22 @@ const check = (index) => {
     console.log(score.value)
 }
 
+const year = ref(null)
+const month = ref(null)
+const day = ref(null)
+
+// 날짜 업데이트 구역
+watch(() => movie.value, (newMovie) => {
+  if (newMovie && newMovie.release_date) {
+    const releaseDateObj = new Date(newMovie.release_date);
+    year.value = releaseDateObj.getFullYear();
+    month.value = releaseDateObj.getMonth() + 1
+    day.value = String(releaseDateObj.getDate()).padStart(2,'0')
+  }
+});
+
+
+
 </script>
 
 <style scoped>
@@ -157,6 +189,22 @@ const check = (index) => {
     overflow: hidden;
 }
 
+.background-img {
+    margin-top: 15%; /* 컨테이너 상단 기준으로 20% 아래로 이동 */
+    animation: moveMargin 4s ease-in-out alternate; /* 애니메이션 적용 */
+}
+
+/* @keyframes로 마진 변경 정의 */
+@keyframes moveMargin {
+  from {
+    margin-top: 0; /* 시작 지점 */
+  }
+  to {
+    margin-top: 15%; /* 끝 지점 */
+  }
+}
+
+
 .background-img::before {
   content: "";
   position: absolute;
@@ -164,15 +212,16 @@ const check = (index) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0));
+  background: linear-gradient(to top, rgba(0,13,17, 1), rgba(0,13,17, 0.6) 50%, rgba(0, 0, 0, 0));
   pointer-events: none;
   z-index: 1;
 }
 
 .background-img img {
   object-fit: cover; /* 이미지가 컨테이너에 맞게 채워지도록 설정 */
-  width: 100%; /* 이미지 크기 제한 (선택 사항) */
-  height: 100%; /* 이미지 크기 제한 (선택 사항) */
+  object-position: center 20%;
+  width: 100%; 
+  height: 100%;
 }
 
 .movie-title {
@@ -187,6 +236,17 @@ const check = (index) => {
   grid-template-rows: auto auto; /* 각 행의 높이를 자동으로 설정 */
   grid-template-columns: 1fr repeat(10, 1fr) 1fr; /* 양옆에 1등분씩 여백, 가운데 10등분 */
   gap: 0;
+}
+.movie-title-info-detail {
+    display: flex;
+}
+.relase-date {
+    margin-right: 0.4em;
+}
+
+.genre {
+    display: inline-block;
+    margin-right: 0.4em;
 }
 
 .movie-title-info-overview {
@@ -219,6 +279,25 @@ const check = (index) => {
   margin-right: 10px;
 }
 
+/* 출연진 컴포넌트  */
+
+.actor {
+    grid-column: 4/10;
+    grid-row: 2;
+    margin-top: 150px;
+}
+.actor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: flex-start;
+    padding: 0; /* 양쪽 끝에 여백 없음 */
+}
+.actor-item {
+    flex: 1 1 calc(25% - 10px); /* 4개씩 한 줄에 배치되도록 설정 */
+    box-sizing: border-box; /* 패딩과 테두리를 포함하여 크기를 계산 */
+}
+
 /* 하단 info */
 .detail-movie {
     display: grid;
@@ -242,7 +321,6 @@ const check = (index) => {
 }
 .movie-score {
     max-width: 100px;
-    border: 1px solid red;
     text-align: center;
 }
 .movie-score div {

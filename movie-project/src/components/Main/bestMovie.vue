@@ -56,7 +56,7 @@ const day = String(releaseDateObj.getDate()).padStart(2,'0')
     align-items: flex-end;      /* 수직 방향으로 하단 정렬 */
     background-color: black;
     color: white;
-    background-size: 130%; /* 초기 크기 130% 설정 */
+    background-size: 110%; /* 초기 크기 130% 설정 */
     background-repeat: no-repeat; /* 이미지 반복 방지 */
     background-position: center 20%; /* x축은 중앙, y축은 아래로 20% 설정 */
     pointer-events: auto; /* 클릭 이벤트 활성화 */
@@ -66,19 +66,19 @@ const day = String(releaseDateObj.getDate()).padStart(2,'0')
 
 @keyframes zoomInOut {
     0% {
-        background-size: 115%; /* 시작 크기 */
+        background-size: 110%; /* 시작 크기 */
     }
     10% {
-        background-size: 115%; 
+        background-size: 110%; 
     }
     50% {
         background-size: 100%; /* 중간 크기 */
     }
     90% {
-        background-size: 115%; 
+        background-size: 110%; 
     }
     100% {
-        background-size: 115%; /* 끝 크기 */
+        background-size: 110%; /* 끝 크기 */
     }
 }
 
