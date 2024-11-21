@@ -1,6 +1,8 @@
 from drf_spectacular.utils import extend_schema
 # Django REST Framework(DRF)에서 제공하는 클래스 기반 뷰(Class-Based View, CBV)의 기본 클래스
 from rest_framework.views import APIView
+
+from .serializer import UserSerializer
 # APIView는 RESTful API의 각 HTTP 메서드(GET, POST, PUT, DELETE, 등)를 처리하기 위한 메서드(get, post, put, delete 등)를 제공
 # 기본적으로 APIView는 HTTP 메서드별로 요청을 처리하도록 설계되어 있음
 
@@ -20,6 +22,8 @@ from rest_framework.permissions import IsAuthenticated # 사용자 권한 인증
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 
+from movies.models import Review
+
 User = get_user_model()
 
 class UserInfoSerializer(serializers.Serializer):
@@ -36,6 +40,7 @@ class RegisterView(APIView):
     )
     def post(self, request):
         username = request.data.get('username')
+        nickname = request.data.get('nickname')
         password = request.data.get('password')
         email = request.data.get('email')
 
@@ -44,6 +49,7 @@ class RegisterView(APIView):
         
         user = User.objects.create(
             username = username,
+            nickname = nickname,
             password = make_password(password),
             email = email,
         )
@@ -84,4 +90,53 @@ class SignoutView(APIView):
             return Response({"message": "회원탈퇴 되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"error": f"에러: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+ 
+class ProfileUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, user_id):
+        # user.id, username, email, user_profile, user_intro, kept_movies, following, follower 수
+        # 유저가 작성한 리뷰들 id도 모아서 뿌리기
+        # 유저의 플레이 리스트 정보도 같이 뿌리기
+        user = User.objects.get(id=user_id)
+
+        # 유저 기본 정보
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'nickname': user.nickname,
+            'email': user.email,
+            'user_profile': user.user_profile,
+            'user_intro': user.user_intro,
+            'kept_movies_count': user.kept_movies.count(),
+            'followings_count': user.followings.count(),
+            'followers_count': user.followers.count(),
+        }
+        serializer = UserSerializer(user_data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, user_id):
+
+        user = User.objects.get(id=user_id)
+        if user.id != request.user.id:
+            return Response({'error': '수정 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+    
+        input_data = request.data
+
+        user.user_profile = input_data.get('user_profile', user.user_profile)
+        user.email = input_data.get('email', user.email)
+        user.nickname = input_data.get('nickname', user.nickname)
+        user.user_intro = input_data.get('user_intro', user.user_intro)
+        user.save()
+
+        return Response({'message': '수정 완료'}, status=status.HTTP_200_OK)
+    
+class UserReviewView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = user_id
+
         
+    
