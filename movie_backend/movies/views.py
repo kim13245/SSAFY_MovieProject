@@ -1,20 +1,22 @@
+from functools import partial
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review
-from .serilalizers import MovieDetailSerializer, MovieListSerializer, ReviewSerializer
+from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, Comment, ReviewComment
+from .serilalizers import MovieDetailSerializer, MovieListSerializer, ReviewSerializer, ReviewCommentSerializer
 from .get_data import get_movie_details, get_cast_crew, serch_movie
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
-
+# 영화 리스트 가져오기
 class MovieListView(APIView):
     def get(self, request):
         movies = Movie.objects.all()
         serializer = MovieListSerializer(movies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
+# 영화 세부 정보 가져오기
 class MovieDetailView(APIView):
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
@@ -110,12 +112,14 @@ class MovieDetailView(APIView):
             }
             return Response(response_data, status=status.HTTP_200_OK)
         
+# 영화 검색 기능
 class MovieSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('title')
         movie_data = serch_movie(query)
         return Response(movie_data, status=status.HTTP_200_OK)
 
+# 감정 별로 영화 리스트 가져오기
 class SelectedEmotionView(APIView):
     def get(self, request, emotion):
         genres = Genre.objects.filter(emotions__name = emotion)
@@ -124,14 +128,22 @@ class SelectedEmotionView(APIView):
         serializer = MovieListSerializer(movies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+# 영화 리뷰 기능
 class ReviewView(APIView):
+
     def get(self, request):
         review_id = request.query_params.get('id', None)
         
         if review_id:
             review = get_object_or_404(Review, id=review_id)
-            serializer = ReviewSerializer(review)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            comments = ReviewComment.objects.filter(review=review)
+            review_serializer = ReviewSerializer(review)
+            comment_serializer = ReviewCommentSerializer(comments, many=True)
+            return Response(
+                data={
+                    'review': review_serializer.data,
+                    'comments': comment_serializer.data,
+                }, status=status.HTTP_200_OK)
         
         reviews = Review.objects.all()
         serializer = ReviewSerializer(reviews, many=True)
@@ -144,7 +156,8 @@ class ReviewView(APIView):
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def like(self, request):
+    # 좋아요 기능
+    def patch(self, request):
         review_id = request.data.get('id', None)
         if not review_id:
             return Response({'error': '리뷰 아이디가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -165,11 +178,11 @@ class ReviewView(APIView):
     def put(self, request):
         review_id = request.data.get('id', None)
         if not review_id:
-            return Response({'error': '리뷰 ID가 필요합니다.'})
+            return Response({'error': '리뷰 ID가 필요합니다.'}, status=status.HTTP_403_FORBIDDEN)
         
         review = get_object_or_404(Review, id=review_id)
         if review.user != request.user:
-                return Response({'error': '수정 권한이 없습니다.'})
+                return Response({'error': '수정 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
         
         serializer = ReviewSerializer(instance=review, data=request.data, partial=True)
         if serializer.is_valid():
@@ -188,7 +201,39 @@ class ReviewView(APIView):
         
         review.delete()
         return Response({'message':'리뷰가 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
-        
 
+# 리뷰의 댓글 기능
+class ReviewCommentView(APIView):
+    def post(self, request, review_id):
+        review = get_object_or_404(Review, id=review_id)
+        serializer = ReviewCommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, review=review)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, review_id):
+        review = get_object_or_404(Review, id=review_id)
+        comments = ReviewComment.objects.filter(review=review)
+        serializer = ReviewCommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, comment_id):
+        comment = get_object_or_404(ReviewComment, id=comment_id)
+        if comment.user != request.user:
+            return Response({'error': '수정 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
         
+        serializer = ReviewCommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, comment_id):
+        comment = get_object_or_404(ReviewComment, id=comment_id)
+        if comment.user != request.user:
+            return Response({'error': '삭제 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        comment.delete()
+        return Response({'message': '댓글 삭제 성공'}, status=status.HTTP_204_NO_CONTENT)
 

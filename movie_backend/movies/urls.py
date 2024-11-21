@@ -8,4 +8,6 @@ urlpatterns = [
     path('emotion/<str:emotion>', views.SelectedEmotionView.as_view(), name='emotion'),\
     path('reviews/', views.ReviewView.as_view(), name='reviews'),
     path('reviews/likes/', views.ReviewView.as_view(), name='review_like'),
+    path('reviews/<int:review_id>/comments/', views.ReviewCommentView, name='review_comment'),
+    path('comments/<int:comment_id>/', views.ReviewCommentView.as_view(), name='comment_detail'),
 ]
