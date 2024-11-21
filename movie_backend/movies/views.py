@@ -162,8 +162,8 @@ class ReviewView(APIView):
         if not review_id:
             return Response({'error': '리뷰 아이디가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         review = get_object_or_404(Review, id=review_id)
-
-        if request.user in review.likes.all():
+        is_liked = review.likes.filter(id=request.user.id).exists()
+        if is_liked:
             review.likes.remove(request.user)
             liked = False
         else:

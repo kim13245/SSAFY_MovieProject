@@ -90,6 +90,7 @@ class ReviewComment(models.Model):
     review = models.ForeignKey('Review', on_delete=models.CASCADE)  # 리뷰 ID (외래키)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
     content = models.TextField()  # 댓글 내용
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Collection(models.Model):
     # user, movie, title, poster_path, vote_average

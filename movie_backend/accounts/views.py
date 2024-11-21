@@ -67,11 +67,11 @@ class LoginView(APIView):
 
         #사용자 인증
         user = authenticate(username=username, password=password)
-        if user is not None:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response([{"token": token.key}, {"userId": user.id}, {"userName":username}], status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Invalid crenentials."}, status=status.HTTP_401_UNAUTHORIZED)
+        if user is None:
+            return Response({"error": "아이디 혹은 비밀번호가 잘못되었습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response([{"token": token.key}, {"userId": user.id}, {"userName":username}], status=status.HTTP_200_OK)
+        
         
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
