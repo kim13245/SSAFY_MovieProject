@@ -45,8 +45,8 @@ let imageUrl = `${Base_URL}${props.credit.profile_path}`
     
 }
 .container:hover {
-    box-shadow: 0 0px 20px rgba(0, 123, 255, 0.6); /* 호버 시 그림자 추가 */
-    border: 1px solid #007bff;
+    box-shadow: 0 0px 20px rgba(38, 98, 100, 0.6); /* 호버 시 그림자 추가 */
+    border: 1px solid #61FBFF;
 }
 .profie-text {
     margin-left: 0.4em;

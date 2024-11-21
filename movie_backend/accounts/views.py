@@ -102,18 +102,18 @@ class ProfileUserView(APIView):
         user = User.objects.get(id=user_id)
 
         # 유저 기본 정보
-        user_data = {
-            'id': user.id,
-            'username': user.username,
-            'nickname': user.nickname,
-            'email': user.email,
-            'user_profile': user.user_profile,
-            'user_intro': user.user_intro,
-            'kept_movies_count': user.kept_movies.count(),
-            'followings_count': user.followings.count(),
-            'followers_count': user.followers.count(),
-        }
-        serializer = UserSerializer(user_data)
+        # user_data = {
+        #     'id': user.id,
+        #     'username': user.username,
+        #     'nickname': user.nickname,
+        #     'email': user.email,
+        #     'user_profile': user.user_profile,
+        #     'user_intro': user.user_intro,
+        #     'kept_movies_count': user.kept_movies.count(),
+        #     'followings_count': user.followings.count(),
+        #     'followers_count': user.followers.count(),
+        # }
+        serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, user_id):

@@ -55,12 +55,12 @@ export const useMovieStore = defineStore('movie', () => {
   const movieBestList = ref([])
   const apimovieBest = async function() {
     try {
-      const response = await axios.get(`${END_POINT}/movie/popular?api_key=${API_KEY}&language=ko-KR&page=1`)
+      const response = await axios.get(`${END_POINT}/movie/now_playing?api_key=${API_KEY}&language=ko-KR&page=1`)
       const movies = response.data.results
       movieBestList.value.push(...movies)
   
-      if (movieBestList.value.length > 5) {
-        movieBestList.value.splice(5)
+      if (movieBestList.value.length > 10) {
+        movieBestList.value.splice(10)
       }
       console.log(movieBestList.value)
     } catch (error) {

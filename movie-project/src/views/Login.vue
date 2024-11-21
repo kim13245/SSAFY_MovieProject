@@ -34,6 +34,7 @@ const router = useRouter()
 const username = ref(null)
 const password = ref(null)
 
+// 로그인 api 요청 
 const LoginCheck = function() {
     axios ({
         method:'post',
@@ -51,6 +52,7 @@ const LoginCheck = function() {
         console.log('성공')
         store.Token = res.data[0].token
         store.userId = res.data[1].userId
+        console.log(store.userId)
         store.username = res.data[2].userName
         router.push({name:'home'})
     }).catch((err) => {

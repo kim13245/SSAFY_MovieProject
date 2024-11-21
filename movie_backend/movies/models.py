@@ -86,6 +86,14 @@ class Review(models.Model):
     def likes_count(self):
         return self.likes.count()
     
+
+class ReviewComment(models.Model):
+    review = models.ForeignKey('Review', on_delete=models.CASCADE)  # 리뷰 ID (외래키)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
+    content = models.TextField()  # 댓글 내용
+
+
+
 class Collection(models.Model):
     # user, movie, title, poster_path, vote_average
     title = models.CharField(max_length=255)

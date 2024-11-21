@@ -90,7 +90,7 @@ const day = String(releaseDateObj.getDate()).padStart(2,'0')
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to top, rgba(0,13,17, 0.4), rgba(0,13,17, 0.2) 30%, rgba(0,13,17, 0.1) 50%, rgba(0,13,17, 0.05) 80%, rgba(0,13,17, 0));
+    background: linear-gradient(to top, rgba(0,13,17, 0.4), rgba(0,13,17, 0.1) 30%, rgba(0,13,17, 0.05) 50%, rgba(0,13,17, 0.03) 80%, rgba(0,13,17, 0));
 
     pointer-events: none; 
     z-index: 1;
