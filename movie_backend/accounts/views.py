@@ -40,13 +40,16 @@ class RegisterView(APIView):
     )
     def post(self, request):
         username = request.data.get('username')
-        nickname = request.data.get('nickname')
+        nickname = request.data.get('nickname', "크와와와왕")
         password = request.data.get('password')
         email = request.data.get('email')
 
-        if not username or not password:
-            return Response({"error": "아이디나 패스워드 입력이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        
+        if not username or not password or nickname:
+            return Response({"error": "아이디 혹은 패스워드 혹은 프로필 이름 입력이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "이미 사용 중인 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "이미 사용 중인 이메일입니다."}, status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.create(
             username = username,
             nickname = nickname,
@@ -100,19 +103,6 @@ class ProfileUserView(APIView):
         # 유저가 작성한 리뷰들 id도 모아서 뿌리기
         # 유저의 플레이 리스트 정보도 같이 뿌리기
         user = User.objects.get(id=user_id)
-
-        # 유저 기본 정보
-        # user_data = {
-        #     'id': user.id,
-        #     'username': user.username,
-        #     'nickname': user.nickname,
-        #     'email': user.email,
-        #     'user_profile': user.user_profile,
-        #     'user_intro': user.user_intro,
-        #     'kept_movies_count': user.kept_movies.count(),
-        #     'followings_count': user.followings.count(),
-        #     'followers_count': user.followers.count(),
-        # }
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
