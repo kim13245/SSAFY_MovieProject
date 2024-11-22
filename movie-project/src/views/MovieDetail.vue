@@ -30,13 +30,21 @@
                     <div class="movie-title-detail-content">
                         <div class="movie-score">
                             <div>
-                                {{ movie.vote_average }}
+                                {{ (movie.vote_average).toFixed(1) }}
                             </div>
                             <p>TMDB 기준</p>
                         </div>
                         <hr />
                         <div class="score">
                             <div class="score-point">
+                                <!-- 리뷰 기능 테스트 -->
+                                <div class="reveiw">
+                                    <form @submit.prevent="review">
+                                        <input type="text" v-model="reviwContent">
+                                        <button>test</button>
+                                    </form>    
+                                </div>
+
                                 <div class="star-score">
                                     <!-- 별점 기능 추가 -->
                                     <div class="inner">
@@ -92,16 +100,28 @@
                 <div class="actor-list">
                     <DetailActor v-for="credit in credits" :key="credit" :credit="credit" class="actor-item"/>
                 </div>
+            <!-- 여기서 리뷰 뜨는지 체크 -->
+            </div>
+            <div class="rivew-list">
+                <h1>리뷰 모음</h1>
+                <div class="rivew-list-items">
+                    <ReviewItem class="rivew-list-item" v-for="riview in reviews" :key="riview.id" :riview="riview"/>
+                </div>
+                <div>
+            </div>
+                
             </div>
             <!-- <div class="all-comment">
                 <h1>이런 코멘트 어떤가요?</h1>
             </div> -->
         </div>
+        
     </div>
 </template>
 
 <script setup>
 import DetailActor from "@/components/Detail/DetailActor.vue";
+import ReviewItem from "@/components/Main/reviewItem.vue";
 import { useMovieStore } from "@/stores/movie";
 import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
@@ -114,15 +134,19 @@ const movieId = route.params.movie_id;
 // movie.origin_country는 model에 없음
 const movie = ref(null);
 const credits = ref(null)
+const reviews = ref(null);
 const END_POINT = "http://127.0.0.1:8000/api/v1/movies";
+
 
 const getMovieDetails = async () => {
   try {
     const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`);
     movie.value = response.data.movie;
     credits.value = response.data.credits.cast
-    console.log(movie.value);
-    console.log(credits.value)
+    reviews.value = response.data.reviews;
+    // console.log(movie.value);
+    // console.log(credits.value);
+    // console.log(reviews.value)
 
     if (credits.value && credits.value.length > 12) {
         console.log('slice!')
@@ -173,6 +197,35 @@ watch(() => movie.value, (newMovie) => {
   }
 });
 
+
+
+const reviwContent = ref(null)
+const reviewNumber = ref(null)
+
+// review test
+const review = function() {
+    axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/api/v1/movies/reviews/',
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
+        data: {
+            content: reviwContent.value,
+            rating: score.value,
+            movie: movieId,
+            emotion: 1,
+        }
+    }).then((res) => {
+        console.log(res.data);
+        // 작성된 리뷰를 기존 리뷰 리스트에 추가
+        reviews.value.unshift(res.data); // 최신 리뷰가 위로 올라오도록 추가
+        reviwContent.value = ''; // 입력값 초기화
+        reviewNumber.value = null;
+    }).catch((err) => {
+        console.error(err.response);
+    });
+};
 
 
 </script>
@@ -292,11 +345,31 @@ watch(() => movie.value, (newMovie) => {
     gap: 1em;
     justify-content: flex-start;
     padding: 0; /* 양쪽 끝에 여백 없음 */
+    margin: 0;
 }
 .actor-item {
-    flex: 1 1 calc(25% - 10px); /* 4개씩 한 줄에 배치되도록 설정 */
+    width: calc((100% - 3em) / 4); 
     box-sizing: border-box; /* 패딩과 테두리를 포함하여 크기를 계산 */
 }
+
+/* 리뷰 */
+.rivew-list {
+    grid-column: 4/10;
+    grid-row: 3;;
+    width: 100%;
+}
+.rivew-list-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em; 
+    margin: 0;
+    justify-content: flex-start;
+}
+.rivew-list-item {
+    width: calc((100% - 2em) / 3); 
+}
+
+
 
 /* 하단 info */
 .detail-movie {
@@ -312,10 +385,12 @@ watch(() => movie.value, (newMovie) => {
 }
 .movie-title-detail {
     display: flex;
+    align-items: flex-start;
 }
 .movie-poster {
     border-radius: 15px;
     overflow: hidden;
+    max-width: 300px;
 }
 .movie-title-detail-content {
     display: flex;
