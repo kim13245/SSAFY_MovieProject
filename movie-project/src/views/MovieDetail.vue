@@ -313,6 +313,10 @@ watch(() => movie.value, (newMovie) => {
 .movie-title-detail {
     display: flex;
 }
+.movie-poster {
+    border-radius: 15px;
+    overflow: hidden;
+}
 .movie-title-detail-content {
     display: flex;
     flex-direction: column;
