@@ -27,8 +27,9 @@ onMounted( async () => {
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
+    margin: 0; 
 }
 .movie-poster {
-    width: 18%;
+    width: calc((100% - 4em) / 5); 
 }
 </style>

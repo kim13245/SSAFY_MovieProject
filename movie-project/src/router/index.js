@@ -5,7 +5,9 @@ import MindCollection from '@/views/MindCollection.vue'
 import MovieDetail from '@/views/MovieDetail.vue'
 import MovieSearch from '@/views/MovieSearch.vue'
 import Profile from '@/views/Profile.vue'
+import RivewDetail from '@/views/RivewDetail.vue'
 import SignUp from '@/views/SignUp.vue'
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 
@@ -52,7 +54,11 @@ const router = createRouter({
       name:'signup',
       component:SignUp,
     },
-    
+    {
+      path:'/review/:review_id',
+      name:'review',
+      component:RivewDetail,
+    },
 
   ],
 })

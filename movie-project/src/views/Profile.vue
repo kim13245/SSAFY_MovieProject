@@ -19,6 +19,7 @@
                             <p>팔로잉</p>
                             <p> {{ userInfo.followings_count }} </p>
                         </div>
+                        <button @click.prevent="follow">click</button>
                     </div>
                 </div>
                 <div class="info-detial">
@@ -28,7 +29,7 @@
                     </div>
                     <div class="my-score">
                         <p>나의 평균 점수</p>
-                        <h1>4.3</h1>
+                        <h1>{{ (userInfo.rating_average).toFixed(1) }}</h1>
                     </div>
                     <div class="my-count">
                         <p>내가 보고싶은 영화</p>
@@ -38,14 +39,27 @@
             </div>
         </div>
         <div class="user-file">
-            <div class="buttons">
+            <div class="buttons" v-if="userInfo">
                 <ul>
-                    <li>리뷰</li>
-                    <li>코멘트</li>
-                    <li>보고싶은 영화</li>
-                    <li>플레이 리스트</li>
+                    <li 
+                        @click="isPage='Rivews'"
+                        :class="{ 'active': isPage === 'Rivews' }">리뷰</li>
+                    <li 
+                        @click="isPage='Comment'"
+                        :class="{ 'active': isPage === 'Comment' }">코멘트</li>
+                    <li 
+                        @click="isPage='WishMovie'"
+                        :class="{ 'active': isPage === 'WishMovie' }">보고싶은 영화</li>
+                    <li 
+                        @click="isPage='PlayList'"
+                        :class="{ 'active': isPage === 'PlayList' }">플레이 리스트</li>
                 </ul>
             </div>
+            <hr>
+            <Rivews v-if="isPage === 'Rivews'" :userInfo="userInfo"/>
+            <Comment v-if="isPage === 'Comment'" :userInfo="userInfo"/>
+            <WishMovie v-if="isPage === 'WishMovie'" :userInfo="userInfo"/>
+            <PlayList v-if="isPage === 'PlayList'" :userInfo="userInfo"/>
             <hr>
             <div class="components">
 
@@ -61,13 +75,37 @@
 
 <script setup>
 
+import Comment from '@/components/profile/Comment.vue';
+import PlayList from '@/components/profile/PlayList.vue';
+import Rivews from '@/components/profile/Rivews.vue';
+import WishMovie from '@/components/profile/WishMovie.vue';
 import { useMovieStore } from '@/stores/movie';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute()
+
 const store = useMovieStore()
 const router = useRouter()
 const userInfo = ref(null)
+// 페이지 전환
+const isPage = ref('Rivews')
+
+// test 팔로워 팔로잉
+const follow = function() {
+    axios({
+        method:'post',
+        url:`http://127.0.0.1:8000/api/v1/accounts/users/${route.params.user_id}/follow`,
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
+    }).then(() => {
+        console.log('성공s')
+    }).catch((err) => {
+        console.error(err)
+    })
+}
 
 const out = function() {
     axios({
@@ -87,21 +125,36 @@ const out = function() {
     })
 }
 
-onMounted(() => {
-    console.log(1)
-    axios({
-        method:'get',
-        url:`http://127.0.0.1:8000/api/v1/accounts/profile/${store.userId}`,
+const getUserInfo = function() {
+    return axios({
+        method: 'get',
+        url: `http://127.0.0.1:8000/api/v1/accounts/profile/${route.params.user_id}`,
         headers: {
             Authorization: `Token ${store.Token}`, // 인증 토큰 추가
         },
-    }).then((res) => {
-        console.log(res)
-        userInfo.value = res.data
-    }).catch((err) => {
-        console.error(err)
     })
-})
+    .then((res) => {
+        console.log(res);
+        userInfo.value = res.data;
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+}
+
+
+onMounted(async () => {
+    try {
+        await getUserInfo();
+    } catch (err) {
+        console.error("Error occurred while fetching user info:", err);
+    }
+});
+
+
+
+
+//  버튼 클릭 유무 체크 
 
 </script>
 
@@ -159,5 +212,31 @@ onMounted(() => {
     width: 200px;
     overflow: hidden;
     border-radius: 200px;
+}
+
+/* 하단 */
+.user-file {
+    grid-column: 4/10;
+    grid-row: 2;
+}
+.buttons {
+    margin-top: 50px;
+}
+.buttons ul {
+    display: flex;
+    gap: 1em;
+}
+.buttons ul li {
+    background-color: gray;
+    min-width: 150px;
+    border-radius: 50px;
+    text-align: center;
+    padding: 0.5em 1em;
+    cursor: pointer;
+}
+/* 클릭된 항목에 대해 배경 색상 변경 */
+.buttons ul li.active {
+    background-color: #4CAF50; /* 예시로 활성화된 항목의 배경을 녹색으로 설정 */
+    color: white; /* 글자 색을 흰색으로 변경 */
 }
 </style>

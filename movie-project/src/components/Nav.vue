@@ -24,7 +24,7 @@
                 <!-- 로그인 이후에 보임 -->
                  <!-- 파라미터 지우기 -->
                 <li v-if="isLoggedIn">
-                    <RouterLink :to="{name:'profile', params:{ user_id: userid } }" class="navTag">마이 프로필</RouterLink>
+                    <RouterLink :to="{name:'profile', params:{ user_id: store.userId } }" class="navTag">마이 프로필</RouterLink>
                 </li>
                 <!-- li_center를 끝으로 이동 -->
                 <li class="li_center">
@@ -56,8 +56,9 @@ const store = useMovieStore()
 
 // 로그인 상태 체크!
 // 페이지 로드 시 로그인 상태 확인
-const isLoggedIn = computed(() => !!store.Token)
-
+const isLoggedIn = computed(() => {
+    return !!store.Token;  // Token 값에 따라 로그인 여부 판단
+});
 // 로그아웃
 const logout = function() {
     // store.Token = null
@@ -72,8 +73,10 @@ const logout = function() {
     }).then((res) => {
         alert('로그아웃 성공')
         console.log('check')
-        router.push({name:'home'})
+        store.userId = null
         store.Token = null
+        router.push({name:'home'})
+        
     }).catch((err) => {
         console.log(err)
         store.Token = null

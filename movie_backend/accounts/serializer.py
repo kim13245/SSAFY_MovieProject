@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 from movies.models import Review, ReviewComment, Community, Comment
 User = get_user_model()
 
@@ -11,20 +12,21 @@ class UserSerializer(serializers.ModelSerializer):
     review_comment_count = serializers.SerializerMethodField()
     community_count = serializers.SerializerMethodField()
     community_comment_count = serializers.SerializerMethodField()
-
+    rating_average = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
-            'id', 'username', 'nickname', 'email', 'user_profile', 'user_intro',
+            'id', 'username', 'nickname', 'email', 'user_profile', 'user_intro', 'followings',
             'followers_count', 'followings_count', 'kept_movies_count',
             'review_count', 'review_comment_count', 'community_count', 'community_comment_count'
+            , 'rating_average',
         )
 
         read_only_fields = (
             'id', 'followers_count', 'followings_count', 
             'kept_movies_count', 'review_count', 'review_comment_count', 
-            'community_count', 'community_comment_count'
+            'community_count', 'community_comment_count', 'rating_average',
         )
 
     def get_followers_count(self, obj):
@@ -47,3 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_community_comment_count(self, obj):
         return Comment.objects.filter(user=obj).count()
+    
+    def get_rating_average(self, obj):
+        result = Review.objects.filter(user=obj).aggregate(average=Avg('rating'))
+        return result['average'] or 0.0

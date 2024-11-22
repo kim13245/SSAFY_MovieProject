@@ -13,6 +13,9 @@ export const useMovieStore = defineStore('movie', () => {
   //개봉 예정작을 먼저 들고온다.
   const apiMovie = async function() {
     try {
+      // 기존 데이터를 초기화
+      movieList.value = [];
+      countCheck.value = 0; // 카운트도 초기화
       while (movieList.value.length < 10) {
         const response = await axios.get(`${END_POINT}/movie/upcoming?api_key=${API_KEY}&language=ko-KR&page=${currentPage.value}`)
         const movies = response.data.results
@@ -25,7 +28,8 @@ export const useMovieStore = defineStore('movie', () => {
           //   return false
           // }
           const releaseDate = new Date(movie.release_date)
-          const today = new Date()
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설
           return releaseDate > today
         })
 
@@ -188,5 +192,5 @@ const genres = [
   ]
 
 
-  return {movieList, apiMovie, apimovieBest,movieBestList, Token, getUserId, username, userId, getMind, MindMoveList, genres}
+  return {movieList, apiMovie, apimovieBest,movieBestList, Token, getUserId, username, userId, getMind, MindMoveList, genres,API_KEY}
 }, {persist:true})

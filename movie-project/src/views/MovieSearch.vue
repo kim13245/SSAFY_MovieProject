@@ -84,16 +84,16 @@ const getSearch = function() {
 }
 .poster-list div {
     display: flex; /* Flexbox 사용 */
-    flex-wrap: wrap; /* 줄바꿈을 허용 */
-    justify-content: flex-start; /* 왼쪽 정렬 */
-    gap: 1em; /* 포스터 간 간격 설정 */
-    margin: 0; /* 양옆 마진 제거 */
+    flex-wrap: wrap; 
+    justify-content: flex-start; 
+    gap: 1em; 
+    margin: 0; 
     gap: 1em;
     grid-column: 4/10;
     grid-row: 1;
 }
 .poster-item {
-    width: calc((100% - 4em) / 5); /* 한 줄에 4개의 포스터 */
+    width: calc((100% - 4em) / 5); 
 }
 
 .serch {
