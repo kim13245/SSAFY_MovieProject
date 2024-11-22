@@ -160,4 +160,7 @@ onMounted(() => {
     overflow: hidden;
     border-radius: 200px;
 }
+div {
+    
+}
 </style>
