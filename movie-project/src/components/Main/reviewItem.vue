@@ -24,5 +24,6 @@ defineProps({
 <style scoped>
 .card {
     border: 1px solid red;
+    
 }
 </style>
