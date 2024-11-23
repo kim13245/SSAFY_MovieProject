@@ -218,6 +218,7 @@ class ReviewView(APIView):
 class ReviewCommentView(APIView):
     def post(self, request, review_id):
         review = get_object_or_404(Review, id=review_id)
+        
         serializer = ReviewCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, review=review)
