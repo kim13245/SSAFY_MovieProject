@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, ReviewComment 
+from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, ReviewComment, Collection
 
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,4 +45,9 @@ class ReviewCommentSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("댓글 내용은 비어 있을 수 없습니다.")
         return value
-        
+
+class CollectionSerializer(serializers.ModelSerializer):
+    movies = MovieListSerializer(many=True, read_only=True) 
+    class Meta:
+        model = Collection
+        fields = ('id', 'title', 'vote_average', 'movies')
