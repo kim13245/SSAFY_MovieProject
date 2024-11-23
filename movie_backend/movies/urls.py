@@ -11,4 +11,6 @@ urlpatterns = [
     path('reviews/<int:review_id>/', views.ReviewView.as_view()),
     path('reviews/<int:review_id>/comments/', views.ReviewCommentView.as_view(), name='review_comment'),
     path('comments/<int:comment_id>/', views.ReviewCommentView.as_view(), name='comment_detail'),
+    path('playlists/', views.PlaylistView.as_view(), name='playlists'),
+    path('playlists/<int:playlist_id>/', views.PlaylistView.as_view(), name='playlist_detail'),
 ]

@@ -1,7 +1,8 @@
 from drf_spectacular.utils import extend_schema
 # Django REST Framework(DRF)에서 제공하는 클래스 기반 뷰(Class-Based View, CBV)의 기본 클래스
 from rest_framework.views import APIView
-
+from rest_framework.authtoken.models import Token
+from django.contrib.sessions.models import Session
 from movies.serilalizers import MovieListSerializer, ReviewSerializer, ReviewCommentSerializer
 from .serializer import UserSerializer
 # APIView는 RESTful API의 각 HTTP 메서드(GET, POST, PUT, DELETE, 등)를 처리하기 위한 메서드(get, post, put, delete 등)를 제공
@@ -92,6 +93,8 @@ class SignoutView(APIView):
         user = request.user
 
         try:
+            Token.objects.filter(user=user).delete()
+            Session.objects.filter(session_data__icontains=user.id).delete()
             user.delete()
             return Response({"message": "회원탈퇴 되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
