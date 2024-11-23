@@ -7,7 +7,7 @@ urlpatterns = [
     path('movie_search/', views.MovieSearchView.as_view(), name='movie_search'),
     path('emotion/<str:emotion>', views.SelectedEmotionView.as_view(), name='emotion'),
     path('reviews/', views.ReviewView.as_view(), name='reviews'),
-    path('reviews/<int:review_id>/', views.ReviewView.as_view()),
+    path('reviews/<int:review_id>/', views.ReviewView.as_view(), name='review_detail'),
     path('reviews/<int:review_id>/comments/', views.ReviewCommentView.as_view(), name='review_comment'),
     path('comments/<int:comment_id>/', views.ReviewCommentView.as_view(), name='comment_detail'),
     path('playlists/<int:playlist_id>/update/', views.UpdatePlaylistView.as_view(), name='playlist_update'),
