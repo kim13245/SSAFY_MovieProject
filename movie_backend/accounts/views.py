@@ -1,4 +1,3 @@
-from drf_spectacular.utils import extend_schema
 # Django REST Framework(DRF)에서 제공하는 클래스 기반 뷰(Class-Based View, CBV)의 기본 클래스
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -26,19 +25,32 @@ from django.contrib.auth import authenticate
 
 from movies.models import Review, ReviewComment, Movie
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse, OpenApiExample
+
 User = get_user_model()
+
+# 스펙타큘러 docs 유저 예시를 위한 클래스
 
 class UserInfoSerializer(serializers.Serializer):
     name = serializers.CharField()
     password = serializers.CharField()
     email = serializers.CharField()
 
+# 회원가입
 class RegisterView(APIView):
 
     @extend_schema(
+        summary="회원가입",
+        description=(
+            "새로운 사용자를 등록 "
+            "사용자 이름, 닉네임, 비밀번호, 이메일이 필요 "
+            "중복된 사용자 이름, 이메일, 닉네임은 허용되지 않음"
+        ),
         request=UserInfoSerializer,  # 입력 데이터
-        responses=UserInfoSerializer,  # 응답 데이터
-        description="This API retrieves or updates example data.",
+        responses={
+            201: OpenApiResponse(description="회원가입 성공"),
+            400: OpenApiResponse(description="요청 데이터 오류 또는 중복된 정보"),
+        },
     )
     def post(self, request):
         username = request.data.get('username')
@@ -61,8 +73,26 @@ class RegisterView(APIView):
             email = email,
         )
         return Response(status=status.HTTP_201_CREATED)
-    
+
+# 로그인
 class LoginView(APIView):
+
+    @extend_schema(
+        summary="로그인",
+        description="사용자 이름과 비밀번호를 통해 로그인. 성공 시 인증 토큰을 반환",
+        request=UserInfoSerializer,  # 입력 데이터
+        responses={
+            200: OpenApiResponse(
+                description="로그인 성공",
+                examples={
+                    "token": "abc123...",
+                    "userId": 1,
+                    "userName": "example_user",
+                },
+            ),
+            401: OpenApiResponse(description="아이디 또는 비밀번호가 잘못되었습니다."),
+        },
+    )
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -74,10 +104,19 @@ class LoginView(APIView):
         token, _ = Token.objects.get_or_create(user=user)
         return Response([{"token": token.key}, {"userId": user.id}, {"userName":username}], status=status.HTTP_200_OK)
         
-        
+# 로그아웃
 class LogoutView(APIView):
+
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="로그아웃",
+        description="현재 로그인된 사용자의 인증 토큰을 삭제",
+        responses={
+            204: OpenApiResponse(description="로그아웃 성공"),
+            400: OpenApiResponse(description="로그인 상태가 아닙니다."),
+        },
+    )
     def delete(self, request):
         try:
             request.user.auth_token.delete()
@@ -85,9 +124,18 @@ class LogoutView(APIView):
         except AttributeError:
             return Response({"error": "로그인 중이 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
 
+# 회원탈퇴
 class SignoutView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="회원탈퇴",
+        description="현재 로그인된 사용자의 계정을 삭제",
+        responses={
+            204: OpenApiResponse(description="회원탈퇴 성공"),
+            400: OpenApiResponse(description="회원탈퇴 중 오류 발생"),
+        },
+    )
     def delete(self, request):
         
         user = request.user
@@ -100,24 +148,35 @@ class SignoutView(APIView):
         except Exception as e:
             return Response({"error": f"에러: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
- 
-class ProfileUserView(APIView):
+# 내 프로필
+class MyProfileView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    
-    def get(self, request, user_id):
-        # user.id, username, email, user_profile, user_intro, kept_movies, following, follower 수
-        # 유저가 작성한 리뷰들 id도 모아서 뿌리기
-        # 유저의 플레이 리스트 정보도 같이 뿌리기
-        user = User.objects.get(id=user_id)
+    @extend_schema(
+        summary="내 프로필 조회",
+        description="로그인한 사용자의 프로필 정보를 반환",
+        responses={
+            200: UserSerializer,
+            401: OpenApiResponse(description="인증 실패"),
+        },
+    )
+    def get(self, request):
+        user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def put(self, request, user_id):
 
-        user = User.objects.get(id=user_id)
-        if user.id != request.user.id:
-            return Response({'error': '수정 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
-    
+    @extend_schema(
+        summary="내 프로필 수정",
+        description="로그인한 사용자가 자신의 프로필 정보를 수정",
+        request=UserSerializer,
+        responses={
+            200: OpenApiResponse(description="프로필 수정 완료"),
+            400: OpenApiResponse(description="잘못된 요청"),
+            401: OpenApiResponse(description="인증 실패"),
+        },
+    )
+    def put(self, request):
+        user = request.user
         input_data = request.data
 
         user.user_profile = input_data.get('user_profile', user.user_profile)
@@ -126,9 +185,48 @@ class ProfileUserView(APIView):
         user.user_intro = input_data.get('user_intro', user.user_intro)
         user.save()
 
-        return Response({'message': '수정 완료'}, status=status.HTTP_200_OK)
+        return Response({'message': '프로필 수정 완료'}, status=status.HTTP_200_OK)
 
+# 다른 유저 프로필
+class UserProfileView(APIView):
+    @extend_schema(
+        summary="다른 유저 프로필 조회",
+        description="특정 유저의 프로필 정보를 조회",
+        parameters=[
+            OpenApiParameter("user_id", int, description="조회할 유저의 ID"),
+        ],
+        responses={
+            200: UserSerializer,
+            404: OpenApiResponse(description="유저를 찾을 수 없습니다."),
+        },
+    )
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# 유저 팔로우 기능
 class UserFollowView(APIView):
+    
+    @extend_schema(
+        summary="사용자 팔로우/언팔로우",
+        description=(
+            "특정 사용자를 팔로우하거나 언팔로우 "
+            "자기 자신을 팔로우할 수 없음"
+        ),
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="팔로우 또는 언팔로우할 사용자의 ID",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(description="팔로우 상태 변경 성공"),
+            400: OpenApiResponse(description="잘못된 요청"),
+        },
+    )
     def post(self, request, user_id):
         target = User.objects.get(pk=user_id)
         if target == request.user:
@@ -147,33 +245,123 @@ class UserFollowView(APIView):
         
         return Response({'message': message}, status=status.HTTP_200_OK)
 
+# 유저가 쓴 리뷰 목록 들고오기
 class UserReviewView(APIView):
+    
+    @extend_schema(
+        summary="사용자가 작성한 리뷰 조회",
+        description="특정 사용자가 작성한 모든 리뷰를 조회",
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="리뷰를 조회할 사용자의 ID",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=ReviewSerializer(many=True),
+                description="사용자가 작성한 리뷰 목록",
+            ),
+            404: OpenApiResponse(description="사용자를 찾을 수 없습니다."),
+        },
+    )
     def get(self, request, user_id):
         user_reviews = Review.objects.filter(user=user_id)
         serializer = ReviewSerializer(user_reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+# 유저가 쓴 리뷰 댓글 목록 들고오기
 class UserReviewCommentView(APIView):
+    
+    @extend_schema(
+        summary="사용자가 작성한 리뷰 댓글 조회",
+        description="특정 사용자가 작성한 모든 리뷰 댓글을 조회",
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="리뷰 댓글을 조회할 사용자의 ID",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=ReviewCommentSerializer(many=True),
+                description="사용자가 작성한 리뷰 댓글 목록",
+            ),
+            404: OpenApiResponse(description="사용자를 찾을 수 없습니다."),
+        },
+    )
     def get(self, request, user_id):
         user_reviews = ReviewComment.objects.filter(user=user_id)
         serializer = ReviewCommentSerializer(user_reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+# 유저가 찜한 영화 목록 들고오기
 class UserMovieView(APIView):
+    @extend_schema(
+        summary="찜한 영화 목록 조회",
+        description="특정 사용자가 찜한 영화의 목록을 반환(각 영화에 대한 사용자의 리뷰 평점(user_rating)도 포함)",
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="찜한 영화를 조회할 사용자의 ID",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=MovieListSerializer(many=True),
+                examples=[
+                    OpenApiExample(
+                        name="찜한 영화 목록 예제",
+                        value=[
+                            {"id": 101, "title": "Movie 1", "poster_path": "/path1.jpg", "user_rating": 4.5},
+                            {"id": 102, "title": "Movie 2", "poster_path": "/path2.jpg", "user_rating": None},
+                        ],
+                    )
+                ],
+            )
+        },
+    )
     def get(self, request, user_id):
         user = User.objects.get(id=user_id)
         kept_movies = user.kept_movies.all()
-        serializers = MovieListSerializer(kept_movies, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
-
         
+        movie_data = []
+        for movie in kept_movies:
+            user_review = movie.review_set.filter(user=user).first()
+            movie_data.append({
+                'id': movie.id,
+                'title': movie.title,
+                'poster_path': movie.poster_path,
+                'user_rating': user_review.rating if user_review else None
+            })
+        return Response(movie_data, status=status.HTTP_200_OK)
+
+# 영화 찜하기
 class UserKeepMovieView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="영화 찜하기/찜 취소",
+        description="특정 영화를 현재 로그인된 사용자의 찜 목록에 추가하거나 제거",
+        parameters=[
+            OpenApiParameter(
+                name="movie_id",
+                type=int,
+                description="찜하거나 찜 취소할 영화의 ID",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(description="찜 상태 변경 성공"),
+        },
+    )
     def post(self, request, movie_id):
-        """
-        사용자가 영화를 찜하거나 찜을 취소하는 API
-        """
         user = request.user
         movie = get_object_or_404(Movie, id=movie_id)
 
