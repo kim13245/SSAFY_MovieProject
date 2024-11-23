@@ -13,6 +13,10 @@
     </div>
     <hr>
     <div>
+        <button>좋아요</button>
+    </div>
+    <hr>
+    <div>
         <div v-for="comment in comments" :key="comment.id">
             {{ comment.nickname }}
             {{ comment.content }}
@@ -103,6 +107,15 @@ const deleteComment = function(CommentId) {
         console.log(err)
     })
 }
+
+
+//좋아요
+// const checkLike = function() {
+//     axios({
+//         method:'post',
+//         url:`http://127.0.0.1:8000/api/v1/movies/reviews/likes/${CommentId}/`
+//     })
+// }
 </script>
 
 <style scoped>

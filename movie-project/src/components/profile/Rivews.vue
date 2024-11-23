@@ -18,7 +18,8 @@
 import { useMovieStore } from '@/stores/movie';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import RivewItem from './ProfileList/rivewItem.vue';
+import RivewItem from './ProfileList/RivewItem.vue';
+
 
 
 const store = useMovieStore();
@@ -33,9 +34,9 @@ const getReivews = function () {
     return axios({
         method: 'get',
         url: `http://127.0.0.1:8000/api/v1/accounts/profile/${props.userInfo.id}/reviews`,
-        headers: {
-            Authorization: `Token ${store.Token}`,
-        },
+        // headers: {
+        //     Authorization: `Token ${store.Token}`,
+        // },
     }).then((res) => {
         Rivews.value = res.data;
         console.log(res);
