@@ -28,69 +28,81 @@
                         <img :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path" alt="Movie Poster" />
                     </div>
                     <div class="movie-title-detail-content">
-                        <div class="movie-score">
-                            <div>
-                                {{ (movie.vote_average).toFixed(1) }}
+                        <div class="movie-scroe-parent">
+                            <div class="movie-score">
+                                <div class="custom-font">
+                                    <p style="font-size: 1.5em; text-shadow: 0px 0px 9px rgba(120, 206, 232, 0.802);">{{ (movie.vote_average).toFixed(1) }}</p>
+                                </div>
+                                <p style="color: #6c757d; font-size: 0.8em;">TMDB 기준</p>
                             </div>
-                            <p>TMDB 기준</p>
+                            <div>
+                                <div class="want-movie">
+                                    <div @click="wantMovie" class="tag-img">
+                                        <img :src="getTagImage" alt="tag-img" />
+                                    </div>
+                                    <p style="color: #6c757d; font-size: 0.8em;">보고싶어요!</p>
+                                </div>
+                            </div>
                         </div>
-                        <hr />
                         <div class="score">
                             <div class="score-point">
                                 <!-- 리뷰 기능 테스트 -->
                                 <div class="reveiw">
-                                    <form @submit.prevent="review">
-                                        <input type="text" v-model="reviwContent">
-                                        <button>test</button>
-                                    </form>    
-                                </div>
-
-                                <div class="star-score">
-                                    <!-- 별점 기능 추가 -->
-                                    <div class="inner">
-                                        <div class="star-rating">
-                                            <div
-                                                class="star"
-                                                v-for="index in 5"
-                                                :key="index"
-                                                @click="check(index)"
-                                            >
-                                                <span v-if="index <= score">🍎</span>
-                                                <span v-if="index > score">🍏</span>
+                                    <form @submit.prevent="review" class="reveiw-form">
+                                        <textarea  class="review-text" type="text" v-model="reviwContent"
+                                        placeholder="여러분의 의견을 작성해주세요."></textarea>
+                                        <div class="reveiw-detail">
+                                            <div class="star-score">
+                                                <!-- 별점 기능 추가 -->
+                                                <div class="inner">
+                                                    <div class="star-rating">
+                                                        <div
+                                                            class="star"
+                                                            v-for="index in 5"
+                                                            :key="index"
+                                                            @click="check(index)"
+                                                        >
+                                                            <div v-if="index <= score" class="span-tag">
+                                                                <img src="@/assets/moviedetail/star-active.png" alt="">
+                                                            </div>
+                                                            <div v-if="index > score" class="span-tag">
+                                                                <img src="@/assets/moviedetail/star-deactive.png" alt="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="star-score">
+                                                        <p><span style="
+                                                            color: #61FBFF; 
+                                                            font-weight: 800; 
+                                                            text-shadow: 0px 0px 9px rgba(120, 206, 232, 0.802);
+                                                            font-size: 1.4em;"
+                                                            >{{ score }}</span> / 5</p>
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <button class="reveiw-button">리뷰 작성</button>
                                         </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3>3.4</h3>
-                                    <p>평균 별점</p>
-                                </div>
-                            </div>
-                            <div class="comment">
-                                <div>
-                                    <div></div>
-                                    <p>보고싶어요!</p>
-                                    <button @click="wantMovie">보고싶음 찜</button>
-                                </div>
-                                <div>
-                                    <div></div>
-                                    <p>코멘트 작성</p>
+                                    </form>     
                                 </div>
                             </div>
                         </div>
+
                         <div class="detail-info">
                             <div class="info-box">
-                                {{ movie.runtime }}
+                                <p>상영시간</p>
+                                <p class="info-box-maintext">{{ movie.runtime }} <span style="font-size: 0.6em; font-weight: 400;">분</span></p>
                             </div>
                             <div class="info-box">
-                                {{ movie.budget }}
+                                <p>총 제작비</p>
+                                <p class="info-box-maintext">{{ movie.budget }} <span style="font-size: 0.6em; font-weight: 400;">$</span></p>
                             </div>
 
                             <!-- <div class="info-box">
                                 {{ movie.origin_country[0] }}
                             </div> -->
                             <div class="info-box">
-                                {{ movie.popularity }}
+                                <p>인기지수</p>
+                                <p class="info-box-maintext">{{ movie.popularity }} <span style="font-size: 0.6em; font-weight: 400;">POINT</span></p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +116,7 @@
             <!-- 여기서 리뷰 뜨는지 체크 -->
             </div>
             <div class="rivew-list">
-                <h1>리뷰 모음</h1>
+                <h1>리뷰</h1>
                 <div class="rivew-list-items">
                     <ReviewItem class="rivew-list-item" v-for="riview in reviews" :key="riview.id" :riview="riview"/>
                 </div>
@@ -127,6 +139,10 @@ import { useMovieStore } from "@/stores/movie";
 import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+
+// 상단에 이미지 import 추가
+import tagActivateImg from '@/assets/moviedetail/tag-activate.png'
+import tagDeactivateImg from '@/assets/moviedetail/tag-deactivae.png'
 
 const store = useMovieStore();
 const route = useRoute();
@@ -239,6 +255,7 @@ const wantMovie = function() {
         },
     }).then((res) => {
         console.log(res.data)
+        isFavorite.value = !isFavorite.value; // 상태를 토글
     }).catch((err) => {
         console.error(err)
     })
@@ -246,9 +263,26 @@ const wantMovie = function() {
 
 // id title vote_vaerage, movies
 
+
+
+// 찜하기 기능
+const isFavorite = ref(false); // 초기값: false
+
+
+const getTagImage = computed(() => {
+    return isFavorite.value ? tagActivateImg : tagDeactivateImg
+})
+
+// 리뷰 작성 placeholder
 </script>
 
 <style scoped>
+
+.custom-font {
+    font-family: 'CWDangamAsac-Bold', sans-serif;
+    color: #61FBFF;
+    font-size: 3em;
+}
 
 /* 전체 스타일 */
 .background-container {
@@ -355,7 +389,7 @@ const wantMovie = function() {
 .actor {
     grid-column: 4/10;
     grid-row: 2;
-    margin-top: 150px;
+    margin-top: 100px;
 }
 .actor-list {
     display: flex;
@@ -375,6 +409,7 @@ const wantMovie = function() {
     grid-column: 4/10;
     grid-row: 3;;
     width: 100%;
+    margin-top: 100px;
 }
 .rivew-list-items {
     display: flex;
@@ -416,19 +451,93 @@ const wantMovie = function() {
     width: 100%;
     margin-left: 1em;
 }
+.movie-scroe-parent {
+    display: flex;
+    gap: 1em;
+}
 .movie-score {
     max-width: 100px;
     text-align: center;
+    margin-bottom: 0.8em;
 }
 .movie-score div {
-    background-color: gray;
-    padding: 0.5em 1em;
+    background-color: #000d12;
+    border: 1px solid #323232;
+    padding: 0.2em 1em;
     border-radius: 10px;
     font-size: 1.3em;
+    height: 60px;
 }
 .score {
     display: flex;
+    width: 100%;
+}
+.score-point {
+    width: 100%;
+}
+.reveiw {
+    width: 100%;
+}
+.review-text {
+    width: 100%;
+    height: 100px;
+    background-color: #000d11;
+    border: 1px solid #323232;  
+    border-radius: 8px;  
+    padding: 0.8em 1em;  
+    position: relative;
+    color: white;
+    resize: none; /* 크기 조절 버튼 비활성화 */
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif'; /* 기본 폰트 */
+}
+.review-text::placeholder {
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif'; /* 기본 폰트 */
+    color: #888;  /* 플레이스홀더 텍스트 색상 */
+    position: absolute;
+    top: 5px;  /* 위로 5px 이동 */
+    left: 10px; /* 왼쪽으로 10px 이동 */
+}
+.reveiw-detail {
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+.reveiw-button {
+    width: 100%;  
+    max-width: 130px; 
+    padding: 0.4em 1em;  
+    font-size: 1em; 
+    border: 1px solid #6c757d;
+    border-radius: 8px;  
+    background-color: #000d11;  
+    color: white; 
+    outline: none;  
+    transition: all 0.3s ease; 
+    cursor: pointer;
+    text-align: center;
+}
+.reveiw-button:hover {
+    border-color: #61FBFF;  
+    background-color: #61FBFF;  
+    color: #000d11;
+    font-weight: bold;
+}
+.tag-img {
+    height: 60px;
+    padding: 1em;
+    background-color: #000d12;
+    border: 1px solid #323232;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.tag-img:hover {
+    border: 1px solid #61FBFF;
+    box-shadow: 0px 0px 9px rgba(120, 206, 232, 0.802);
+}
+.tag-img img {
+    width: 100%;
+    height: 100%
 }
 .comment {
     display: flex;
@@ -438,16 +547,25 @@ const wantMovie = function() {
     display: flex;
     justify-content: space-between;
     gap: 0.6em;
-    margin-top: auto;
+    margin-top: 1em;
 }
 .info-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 33%;
     text-align: center;
-    background-color: rgb(209, 209, 209);
+    background-color: #000d12;
+    border: 1px solid #323232;
     padding: 1.5em;
     border-radius: 10px;
+    color: #6c757d;
 }
-
+.info-box-maintext {
+    color: white;
+    font-size: 1.8em;
+    font-weight: 900;
+}
 /* 하단 */
 .all-comment {
     grid-column: 4/10;
@@ -455,9 +573,22 @@ const wantMovie = function() {
 }
 /* 별점 */
 .inner {
-    
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
 }
 .star-rating {
     display: flex;
+}
+.span-tag {
+    width: 40px;
+}
+.span-tag img {
+    width: 100%;
+}
+.star-score {
+    display: flex;
+    font-size: 1.2em;
+    color: #6c757d;
 }
 </style>
