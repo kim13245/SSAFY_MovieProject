@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from accounts.views import UserKeepMovieView
 urlpatterns = [
     path('movie_list/', views.MovieListView.as_view(), name='movie_list'),
     path('movie_detail/<int:movie_id>/', views.MovieDetailView.as_view(), name='movie_detail'),
@@ -13,4 +13,6 @@ urlpatterns = [
     path('comments/<int:comment_id>/', views.ReviewCommentView.as_view(), name='comment_detail'),
     path('playlists/', views.PlaylistView.as_view(), name='playlists'),
     path('playlists/<int:playlist_id>/', views.PlaylistView.as_view(), name='playlist_detail'),
+    path('keep/<int:movie_id>/', UserKeepMovieView.as_view(), name='keep_movie'),
+
 ]

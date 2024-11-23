@@ -51,3 +51,4 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         fields = ('id', 'title', 'vote_average', 'movies')
+        read_only_fields = ('id', 'vote_average',)

@@ -24,7 +24,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 
-from movies.models import Review, ReviewComment
+from movies.models import Review, ReviewComment, Movie
 
 User = get_user_model()
 
@@ -167,4 +167,22 @@ class UserMovieView(APIView):
         return Response(serializers.data, status=status.HTTP_200_OK)
 
         
-    
+class UserKeepMovieView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, movie_id):
+        """
+        사용자가 영화를 찜하거나 찜을 취소하는 API
+        """
+        user = request.user
+        movie = get_object_or_404(Movie, id=movie_id)
+
+        # 찜 여부 확인
+        if user.kept_movies.filter(id=movie.id).exists():
+            user.kept_movies.remove(movie)  # 찜 취소
+            message = "찜이 취소되었습니다."
+        else:
+            user.kept_movies.add(movie)  # 찜 추가
+            message = "영화를 찜 목록에 추가했습니다."
+
+        return Response({"message": message}, status=status.HTTP_200_OK)
