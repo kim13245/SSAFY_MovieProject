@@ -70,6 +70,7 @@
                                 <div>
                                     <div></div>
                                     <p>보고싶어요!</p>
+                                    <button @click="wantMovie">보고싶음 찜</button>
                                 </div>
                                 <div>
                                     <div></div>
@@ -227,6 +228,23 @@ const review = function() {
     });
 };
 
+
+// 찜하기 기능
+const wantMovie = function() {
+    axios({
+        method:'post',
+        url:`http://127.0.0.1:8000/api/v1/movies/keep/${movieId}/`,
+        headers: {
+            Authorization: `Token ${store.Token}`
+        },
+    }).then((res) => {
+        console.log(res.data)
+    }).catch((err) => {
+        console.error(err)
+    })
+}
+
+// id title vote_vaerage, movies
 
 </script>
 
