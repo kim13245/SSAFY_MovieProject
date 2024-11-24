@@ -12,5 +12,5 @@ urlpatterns = [
     path('comments/<int:comment_id>/', views.ReviewCommentView.as_view(), name='comment_detail'),
     path('playlists/<int:playlist_id>/update/', views.UpdatePlaylistView.as_view(), name='playlist_update'),
     path('keep/<int:movie_id>/', UserKeepMovieView.as_view(), name='keep_movie'),
-
+    path('allreviews/', views.AllReviewView.as_view(), name='allreviews'),
 ]
