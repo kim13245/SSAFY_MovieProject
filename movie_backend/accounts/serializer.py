@@ -13,6 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
     community_count = serializers.SerializerMethodField()
     community_comment_count = serializers.SerializerMethodField()
     rating_average = serializers.SerializerMethodField()
+    followers_nicknames = serializers.SerializerMethodField()
+    followings_nicknames = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -20,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'username', 'nickname', 'email', 'user_profile', 'user_intro', 'followings',
             'followers_count', 'followings_count', 'kept_movies_count',
             'review_count', 'review_comment_count', 'community_count', 'community_comment_count'
-            , 'rating_average',
+            , 'rating_average', 'followers_nicknames', 'followings_nicknames'
         )
 
         read_only_fields = (
@@ -53,3 +55,11 @@ class UserSerializer(serializers.ModelSerializer):
     def get_rating_average(self, obj):
         result = Review.objects.filter(user=obj).aggregate(average=Avg('rating'))
         return result['average'] or 0.0
+    
+    def get_followers_nicknames(self, obj):
+        # 팔로워 유저들의 닉네임 리스트 반환
+        return obj.followers.values_list('nickname', flat=True)
+
+    def get_followings_nicknames(self, obj):
+        # 팔로잉 유저들의 닉네임 리스트 반환
+        return obj.followings.values_list('nickname', flat=True)
