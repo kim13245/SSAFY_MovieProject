@@ -157,17 +157,27 @@ const END_POINT = "http://127.0.0.1:8000/api/v1/movies";
 
 const getMovieDetails = async () => {
   try {
-    const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`);
+    // 조건부로 헤더 설정: 토큰이 있으면 Authorization 헤더 추가
+    const headers = store.Token
+      ? { Authorization: `Token ${store.Token}` }
+      : {};
+
+    // 요청 전송
+    const response = await axios.get(`${END_POINT}/movie_detail/${movieId}/`, { headers });
+
+    // 응답 데이터 처리
     movie.value = response.data.movie;
-    credits.value = response.data.credits.cast
+    credits.value = response.data.credits.cast;
     reviews.value = response.data.reviews;
+
     console.log(movie.value);
     console.log(credits.value);
-    console.log(reviews.value)
+    console.log(reviews.value);
 
+    // 캐스트 데이터 슬라이스
     if (credits.value && credits.value.length > 12) {
-        console.log('slice!')
-      credits.value = credits.value.slice(0, 12); // 0번째부터 10개까지만 자르기
+      console.log("slice!");
+      credits.value = credits.value.slice(0, 12); // 0번째부터 12개까지만 자르기
     }
   } catch (error) {
     console.error(error);

@@ -38,7 +38,7 @@ class UserInfoSerializer(serializers.Serializer):
 
 # 회원가입
 class RegisterView(APIView):
-
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="회원가입",
         description=(
@@ -76,7 +76,7 @@ class RegisterView(APIView):
 
 # 로그인
 class LoginView(APIView):
-
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="로그인",
         description="사용자 이름과 비밀번호를 통해 로그인. 성공 시 인증 토큰을 반환",
@@ -208,7 +208,7 @@ class UserProfileView(APIView):
 
 # 유저 팔로우 기능
 class UserFollowView(APIView):
-    
+    permission_classes = [IsAuthenticated]
     @extend_schema(
         summary="사용자 팔로우/언팔로우",
         description=(
@@ -270,7 +270,7 @@ class UserReviewView(APIView):
     )
     def get(self, request, user_id):
         user_reviews = Review.objects.filter(user=user_id)
-        serializer = ReviewSerializer(user_reviews, many=True)
+        serializer = ReviewSerializer(user_reviews, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 유저가 쓴 리뷰 댓글 목록 들고오기
@@ -289,7 +289,7 @@ class UserReviewCommentView(APIView):
         ],
         responses={
             200: OpenApiResponse(
-                response=ReviewCommentSerializer(many=True),
+                response=ReviewCommentSerializer(many=True, ),
                 description="사용자가 작성한 리뷰 댓글 목록",
             ),
             404: OpenApiResponse(description="사용자를 찾을 수 없습니다."),
@@ -297,7 +297,7 @@ class UserReviewCommentView(APIView):
     )
     def get(self, request, user_id):
         user_reviews = ReviewComment.objects.filter(user=user_id)
-        serializer = ReviewCommentSerializer(user_reviews, many=True)
+        serializer = ReviewCommentSerializer(user_reviews, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 유저가 찜한 영화 목록 들고오기

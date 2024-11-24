@@ -1,8 +1,8 @@
 <template>
-    <div v-if="Rivew_id" class="container">
+    <div v-if="Rivew_id && reviewInfo" class="container">
         <div class="review-head">
             <div class="user-info">
-                <RouterLink :to="{name:'profile', params:{ user_id: reviewInfo.review.user } }" class="link" style="color: white;">
+                <RouterLink :to="{name:'otherprofile', params:{ user_id: reviewInfo.review.user } }" class="link" style="color: white;">
                     {{ reviewInfo.review.nickname }}
                 </RouterLink>
                 <p class="movie-title">
@@ -13,7 +13,7 @@
                     <p>{{ reviewInfo.review.rating }}</p>
                 </div>
                 <div class="like-head">
-                    <button class="like">like</button>
+                    <button @click="checkLike" class="like">like</button>
                     <p>
                         {{ reviewInfo.review.likes_count }}
                     </p>
@@ -72,16 +72,30 @@ const getReivewId = function() {
 }
 const reviewInfo = ref(null)
 const getRivew = async function() {
-    axios({
-        method:'get',
-        url:`http://127.0.0.1:8000/api/v1/movies/reviews/${Rivew_id.value}`
-    }).then((res) => {
-        reviewInfo.value = res.data
-        console.log(res.data)
-    }).catch((err) => {
-        console.log(err)
-    })
-}
+    const config = {
+        method: 'get',
+        url: `http://127.0.0.1:8000/api/v1/movies/reviews/${Rivew_id.value}`,
+    };
+
+    // Token이 존재하면 헤더 추가
+    if (store.Token) {
+        config.headers = {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        };
+    }
+
+    axios(config)
+        .then((res) => {
+            reviewInfo.value = res.data;
+            console.log(Rivew_id.value);
+            console.log(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+
 const comments = ref(null)
 const getComments = async function() {
     axios({
@@ -142,13 +156,21 @@ const deleteComment = function(CommentId) {
 }
 
 
-//좋아요
-// const checkLike = function() {
-//     axios({
-//         method:'post',
-//         url:`http://127.0.0.1:8000/api/v1/movies/reviews/likes/${CommentId}/`
-//     })
-// }
+
+const checkLike = function() {
+    axios({
+        method:'patch',
+        url:`http://127.0.0.1:8000/api/v1/movies/reviews/${Rivew_id.value}/`,
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
+    }).then((res) => {
+        console.log('성공')
+        console.log(res)
+    }).catch((err) => {
+        console.error(err)
+    })
+}
 </script>
 
 <style scoped>
