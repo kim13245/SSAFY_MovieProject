@@ -1,9 +1,10 @@
 <template>
-    <div>
-        <p>{{ props.Rivew.content }}</p>
-        <p>{{ props.Rivew.id }}</p>
+    <div class="card">
+        <div class="card-head">
+            <p>{{ props.Rivew.content }}</p>
+        </div>
         <RouterLink :to="{name:'review',params:{review_id:props.Rivew.id}}">상세히 보기</RouterLink>
-        <button @click="DeleteRivews()">삭제</button>
+        <button class="button" @click="DeleteRivews()">삭제</button>
     </div>
 </template>
 
@@ -41,4 +42,24 @@ const DeleteRivews = function () {
 </script>
 
 <style scoped>
+.card {
+    border: 1px solid #323232;
+    background-color: #010C0E;
+    border-radius: 10px;
+    padding: 1em
+}
+.card-head {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #323232;
+}
+.button {
+    border: 1px solid #323232;
+    background-color: #010C0E;
+    color: white;
+    padding: 0.4em;
+    margin-left: 1em;
+}
 </style>

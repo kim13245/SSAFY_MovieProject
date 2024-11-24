@@ -8,15 +8,19 @@
                 <p class="movie-title">
                     {{ reviewInfo.review.movie_title }}
                 </p>
-                <div class="img">
-                    <img src="@/assets/moviedetail/star-active.png" alt="star-img">
-                    <p>{{ reviewInfo.review.rating }}</p>
-                </div>
-                <div class="like-head">
-                    <button @click="checkLike" class="like">like</button>
-                    <p>
-                        {{ reviewInfo.review.likes_count }}
-                    </p>
+                <div class="footer-div">
+                    <div class="img">
+                        <img src="@/assets/moviedetail/star-active.png" alt="star-img">
+                        <p>{{ reviewInfo.review.rating }}</p>
+                    </div>
+    
+                    <div class="card-fotter-like" @click="checkLike">
+                        <div class="card-fotter-img">
+                            <img src="@/assets/moviedetail/like.png" alt="" v-if="!is_liked">
+                            <img src="@/assets/moviedetail/like-ac.png" alt="" v-if="is_liked">
+                        </div>
+                        <p>{{ li_liked_count }}</p>
+                    </div>
                 </div>
             </div>
             <div class="poster">
@@ -64,7 +68,8 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
-
+const is_liked  = ref(false)
+const li_liked_count = ref(0)
 const route = useRoute()
 const Rivew_id = ref(null)
 const getReivewId = function() {
@@ -87,6 +92,8 @@ const getRivew = async function() {
     axios(config)
         .then((res) => {
             reviewInfo.value = res.data;
+            is_liked.value = res.data.review.is_liked
+            li_liked_count.value = reviewInfo.value.review.likes_count
             console.log(Rivew_id.value);
             console.log(res.data);
         })
@@ -167,6 +174,13 @@ const checkLike = function() {
     }).then((res) => {
         console.log('성공')
         console.log(res)
+        if (is_liked.value === false) {
+            li_liked_count.value ++;
+            is_liked.value = true
+        } else {
+            li_liked_count.value --;
+            is_liked.value = false
+        }
     }).catch((err) => {
         console.error(err)
     })
@@ -203,6 +217,10 @@ const checkLike = function() {
     justify-content: center;
     height: 100%;
 }
+.footer-div {
+    display: flex;
+    gap: 0.5em;
+}
 .img {
     display: flex;
     padding: 0.2em 0.8em;
@@ -234,6 +252,27 @@ const checkLike = function() {
     width: 60px;
     padding: 1em;
     text-align: center
+}
+.card-fotter-like {
+    display: flex;
+    background-color: #282828;
+    gap: 0.5em;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    padding: 0.3em;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 60px;
+    margin-top: 0.5em;
+    transition: all 0.3s ease; 
+}
+.card-fotter-like:hover {
+    border-color: #61FBFF;  
+    background-color: #61FBFF; 
+}
+.card-fotter-img {
+    width: 20px;
 }
 .poster {
     width: 100px;

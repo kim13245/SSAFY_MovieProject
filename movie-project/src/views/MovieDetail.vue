@@ -50,7 +50,7 @@
                                 <div class="reveiw">
                                     <form @submit.prevent="review" class="reveiw-form">
                                         <textarea  class="review-text" type="text" v-model="reviwContent"
-                                        placeholder="여러분의 의견을 작성해주세요."></textarea>
+                                        :placeholder="userContent"></textarea>
                                         <div class="reveiw-detail">
                                             <div class="star-score">
                                                 <!-- 별점 기능 추가 -->
@@ -154,6 +154,17 @@ const credits = ref(null)
 const reviews = ref(null);
 const END_POINT = "http://127.0.0.1:8000/api/v1/movies";
 
+//별점
+const score = ref(0);
+const currentUserId = store.userId
+const userContent = ref(""); // userContent 초기화
+
+// 찜하기 기능
+const isFavorite = ref(false); // 초기값: false
+const getTagImage = computed(() => {
+    return isFavorite.value ? tagActivateImg : tagDeactivateImg
+})
+
 
 const getMovieDetails = async () => {
   try {
@@ -169,7 +180,9 @@ const getMovieDetails = async () => {
     movie.value = response.data.movie;
     credits.value = response.data.credits.cast;
     reviews.value = response.data.reviews;
-
+    // 별점 준거 그대로 넣어주기
+    score.value = response.data.movie.is_kept.rating
+    isFavorite.value = response.data.movie.is_kept.is_kept
     console.log(movie.value);
     console.log(credits.value);
     console.log(reviews.value);
@@ -178,6 +191,15 @@ const getMovieDetails = async () => {
     if (credits.value && credits.value.length > 12) {
       console.log("slice!");
       credits.value = credits.value.slice(0, 12); // 0번째부터 12개까지만 자르기
+    }
+
+
+        // 현재 사용자 ID에 해당하는 리뷰의 content 찾기
+    if (Array.isArray(reviews.value)) {
+        const userReview = reviews.value.find((review) => review.user === currentUserId);
+        userContent.value = userReview ? userReview.content : ""; // 없으면 빈 문자열
+    } else {
+      console.warn("Reviews is not an array:", reviews.value);
     }
   } catch (error) {
     console.error(error);
@@ -198,12 +220,12 @@ const genreNames = computed(() => {
 
 
 
+
 onMounted(() => {
   getMovieDetails();
 });
 
-//별점
-const score = ref(0);
+
 
 const check = (index) => {
     score.value = index
@@ -275,13 +297,6 @@ const wantMovie = function() {
 
 
 
-// 찜하기 기능
-const isFavorite = ref(false); // 초기값: false
-
-
-const getTagImage = computed(() => {
-    return isFavorite.value ? tagActivateImg : tagDeactivateImg
-})
 
 // 리뷰 작성 placeholder
 </script>

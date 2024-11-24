@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>리뷰</h1>
-        <div v-if="props.userInfo">
+        <div class="list" v-if="props.userInfo">
             <!-- userInfo를 이용해 리뷰 데이터를 표시 -->
             <RivewItem
                 v-for="Rivew in Rivews"
@@ -9,6 +9,7 @@
                 :Rivew="Rivew"
                 :userInfo="props.userInfo"
                 :onDelete="handleDelete" 
+                class="list-item"
             />
         </div>
     </div>
@@ -62,4 +63,14 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1em;
+    padding: 0;
+}
+.list-item {
+    width: calc((100% - 2em) / 3);
+}
 </style>

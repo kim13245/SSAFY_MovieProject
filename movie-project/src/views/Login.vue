@@ -52,7 +52,7 @@ const LoginCheck = function() {
         console.log('성공')
         store.Token = res.data[0].token
         store.userId = res.data[1].userId
-        console.log(store.userId)
+        console.log(res)
         store.username = res.data[2].userName
         router.push({name:'home'})
     }).catch((err) => {

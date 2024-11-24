@@ -75,7 +75,7 @@ const logout = function() {
         console.log('check')
         store.userId = null
         store.Token = null
-        router.push({name:'home'})
+        // router.push({name:'home'})
         
     }).catch((err) => {
         console.log(err)
