@@ -623,3 +623,52 @@ class UpdatePlaylistView(APIView):
         movies_to_remove = Movie.objects.filter(id__in=movie_ids)
         playlist.movies.remove(*movies_to_remove)
         return Response({'message': '영화 제거 완료'}, status=status.HTTP_200_OK)
+
+class AllReviewView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        summary="모든 리뷰 조회",
+        description="등록된 모든 리뷰를 조회합니다.",
+        responses={
+            200: OpenApiResponse(
+                description="리뷰 목록 반환",
+                examples={
+                    "application/json": [
+                        {
+                            "id": 1,
+                            "content": "영화가 정말 재밌었어요!",
+                            "rating": 4.5,
+                            "create_review": "2024-11-24T12:34:56",
+                            "nickname": "사용자1",
+                            "movie": {
+                                "id": 101,
+                                "title": "영화 제목",
+                                "poster_path": "/path_to_poster.jpg"
+                            },
+                            "is_liked": True,
+                            "likes_count": 10
+                        },
+                        {
+                            "id": 2,
+                            "content": "별로였어요.",
+                            "rating": 2.0,
+                            "create_review": "2024-11-23T10:00:00",
+                            "nickname": "사용자2",
+                            "movie": {
+                                "id": 102,
+                                "title": "다른 영화 제목",
+                                "poster_path": "/path_to_poster2.jpg"
+                            },
+                            "is_liked": False,
+                            "likes_count": 3
+                        }
+                    ]
+                }
+            )
+        }
+    )
+    def get(self, request):
+        reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
