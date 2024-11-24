@@ -161,9 +161,9 @@ const getMovieDetails = async () => {
     movie.value = response.data.movie;
     credits.value = response.data.credits.cast
     reviews.value = response.data.reviews;
-    // console.log(movie.value);
-    // console.log(credits.value);
-    // console.log(reviews.value)
+    console.log(movie.value);
+    console.log(credits.value);
+    console.log(reviews.value)
 
     if (credits.value && credits.value.length > 12) {
         console.log('slice!')
