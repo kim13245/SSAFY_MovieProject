@@ -56,7 +56,6 @@ class Movie(models.Model):
     crew = models.ManyToManyField('Crew', related_name='movies')  # 제작진
 
 
-
 class Community(models.Model):
     title = models.CharField(max_length=255)  # 제목
     content = models.TextField()  # 내용
@@ -86,11 +85,13 @@ class Review(models.Model):
     def likes_count(self):
         return self.likes.count()
 
+
 class ReviewComment(models.Model):
     review = models.ForeignKey('Review', on_delete=models.CASCADE)  # 리뷰 ID (외래키)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (외래키)
     content = models.TextField()  # 댓글 내용
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Collection(models.Model):
     # user, movie, title, poster_path, vote_average
