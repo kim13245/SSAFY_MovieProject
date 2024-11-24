@@ -1,20 +1,28 @@
 
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, Comment, ReviewComment, Collection
 from .serilalizers import MovieDetailSerializer, MovieListSerializer, ReviewSerializer, ReviewCommentSerializer, CollectionSerializer
 from .get_data import get_movie_details, get_cast_crew, serch_movie
 from django.shortcuts import get_object_or_404
 
-# Create your views here.
-
 # 영화 리스트 가져오기
 
-
 class MovieListView(APIView):
+    @extend_schema(
+        summary="영화 목록 가져오기",
+        description="데이터베이스에 저장된 모든 영화의 목록",
+        responses={
+            200: OpenApiResponse(
+                response=MovieListSerializer(many=True),
+                description="모든 영화의 목록"
+            ),
+        },
+    )
     def get(self, request):
         movies = Movie.objects.all()
         serializer = MovieListSerializer(movies, many=True)
@@ -22,14 +30,25 @@ class MovieListView(APIView):
 
 # 영화 세부 정보 가져오기
 
-
 class MovieDetailView(APIView):
+    @extend_schema(
+        summary="영화 상세 데이터",
+        parameters=[
+            OpenApiParameter("movie_id", int, description="영화 ID"),
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=MovieDetailSerializer,
+                description="영화 정보와 해당 영화의 리뷰 데이터"
+            ),
+        },
+    )
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
-        credits_data = get_cast_crew(movie_id)
         if not movie:
             print('현재 선택한 영화가 DB에 없음')
             new_movie = get_movie_details(movie_id)
+            credits_data = get_cast_crew(movie_id)  
             genre_ids = [genre['id'] for genre in new_movie.get('genres', [])]
             movie = Movie.objects.create(
                 id=movie_id,
@@ -103,21 +122,38 @@ class MovieDetailView(APIView):
                 )
                 # 해당 영화에 제작진 추가
                 movie.crew.add(crew)
+                
         reviews = Review.objects.filter(movie=movie_id).select_related('user')
-        movie_serializer = MovieDetailSerializer(movie)
-        review_serializer = ReviewSerializer(reviews, many=True)
+        movie_serializer = MovieDetailSerializer(movie, context={'request': request})
+        review_serializer = ReviewSerializer(reviews, many=True, context={'request': request})
         response_data = {
             "movie": movie_serializer.data,
             "reviews": review_serializer.data,
-            "credits": credits_data
         }
         print(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
 
 # 영화 검색 기능
 
-
 class MovieSearchView(APIView):
+    @extend_schema(
+        summary="영화 검색",
+        description="사용자가 제공한 영화 제목(query)을 바탕으로 TMDB 또는 내부 데이터베이스에서 영화 검색",
+        parameters=[
+            OpenApiParameter(
+                name="title",
+                type=str,
+                description="검색할 영화의 제목",
+                required=True
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=MovieListSerializer(many=True),
+                description="검색된 영화 목록"
+            ),
+        },
+    )
     def get(self, request):
         query = request.query_params.get('title')
         movie_data = serch_movie(query)
@@ -125,8 +161,25 @@ class MovieSearchView(APIView):
 
 # 감정 별로 영화 리스트 가져오기
 
-
 class SelectedEmotionView(APIView):
+    @extend_schema(
+        summary="감정으로 영화 목록 조회",
+        description="특정 감정과 연결된 장르를 기반으로 해당 장르의 영화를 조회",
+        parameters=[
+            OpenApiParameter(
+                name="emotion",
+                type=str,
+                description="조회할 감정의 이름",
+                required=True
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=MovieListSerializer(many=True),
+                description="지정된 감정에 해당하는 영화 목록"
+            ),
+        },
+    )
     def get(self, request, emotion):
         genres = Genre.objects.filter(emotions__name=emotion)
         movies = Movie.objects.filter(genres__in=genres)
@@ -136,34 +189,77 @@ class SelectedEmotionView(APIView):
 
 # 영화 리뷰 기능
 
-
 class ReviewView(APIView):
-
+    @extend_schema(
+        summary="리뷰 조회",
+        description="특정 리뷰 ID를 사용하여 리뷰를 조회하거나, 모든 리뷰를 가져옴",
+        parameters=[
+            OpenApiParameter(
+                name="review_id",
+                type=int,
+                description="조회할 리뷰의 ID (선택 사항)",
+                required=False
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=ReviewSerializer(many=True),
+                description="리뷰 목록 또는 단일 리뷰"
+            ),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )    
     def get(self, request, review_id=None):
 
         if review_id:
-            review = get_object_or_404(Review, id=review_id)
-            comments = ReviewComment.objects.filter(review=review)
-            review_serializer = ReviewSerializer(review)
-            comment_serializer = ReviewCommentSerializer(comments, many=True)
-            return Response(
-                data={
-                    'review': review_serializer.data,
-                    'comments': comment_serializer.data,
-                }, status=status.HTTP_200_OK)
+            review = get_object_or_404(
+                Review.objects.prefetch_related('likes', 'comments', 'movie', 'user'),
+                id=review_id)
+            serializer = ReviewSerializer(review, context={'request':request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
+        reviews = Review.objects.all().prefetch_related('likes', 'comments', 'movie', 'user')
+        serializer = ReviewSerializer(reviews, many=True, context={'request':request})
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="리뷰 작성",
+        description="새로운 리뷰를 작성 동일한 영화에 대한 중복 리뷰는 허용되지 않음",
+        request=ReviewSerializer,
+        responses={
+            201: OpenApiResponse(
+                response=ReviewSerializer,
+                description="작성된 리뷰"
+            ),
+            400: OpenApiResponse(description="잘못된 요청 또는 중복된 리뷰"),
+        },
+    )
     def post(self, request):
-        serializer = ReviewSerializer(data=request.data, context={
-                                      'request': request})  # context 전달
+        movie_id = request.data.get('movie')
+        if Review.objects.filter(user=request.user, movie_id=movie_id).exists():
+            return Response({'message': '작성한 리뷰가 이미 있습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = ReviewSerializer(data=request.data, context={'request': request})  # context 전달
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="리뷰 좋아요 상태 변경",
+        description="리뷰의 좋아요 상태를 토글. 이미 좋아요를 누른 경우 취소하고, 좋아요를 누르지 않은 경우 추가",
+        request=None,
+        responses={
+            200: OpenApiResponse(
+                description="좋아요 상태 변경 성공",
+                examples={
+                    "liked": True,
+                    "likes_count": 10
+                },
+            ),
+            400: OpenApiResponse(description="리뷰 ID가 제공되지 않았습니다."),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )
     # 좋아요 기능
     def patch(self, request):
         review_id = request.data.get('id', None)
@@ -183,6 +279,19 @@ class ReviewView(APIView):
             'likes_count': review.likes.count(),
         }, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="리뷰 수정",
+        description="리뷰 내용을 수정. 리뷰 작성자만 수정할 수 있음",
+        request=ReviewSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=ReviewSerializer,
+                description="수정된 리뷰"
+            ),
+            403: OpenApiResponse(description="수정 권한이 없습니다."),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )
     def put(self, request):
         review_id = request.data.get('id', None)
         if not review_id:
@@ -199,6 +308,24 @@ class ReviewView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+    @extend_schema(
+        summary="리뷰 삭제",
+        description="리뷰를 삭제. 리뷰 작성자만 삭제할 수 있음",
+        parameters=[
+            OpenApiParameter(
+                name="review_id",
+                type=int,
+                description="삭제할 리뷰의 ID",
+                required=True
+            )
+        ],
+        responses={
+            204: OpenApiResponse(description="리뷰 삭제 성공"),
+            403: OpenApiResponse(description="삭제 권한이 없습니다."),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )
     def delete(self, request, review_id):
         # review_id = request.data.get('id', None)
         # if  not review_id:
@@ -214,8 +341,29 @@ class ReviewView(APIView):
 
 # 리뷰의 댓글 기능
 
-
 class ReviewCommentView(APIView):
+    
+    @extend_schema(
+        summary="리뷰 댓글 작성",
+        description="특정 리뷰에 댓글을 작성",
+        parameters=[
+            OpenApiParameter(
+                name="review_id",
+                type=int,
+                description="댓글을 작성할 리뷰의 ID",
+                required=True
+            )
+        ],
+        request=ReviewCommentSerializer,
+        responses={
+            201: OpenApiResponse(
+                response=ReviewCommentSerializer,
+                description="작성된 댓글"
+            ),
+            400: OpenApiResponse(description="잘못된 요청 데이터"),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )
     def post(self, request, review_id):
         review = get_object_or_404(Review, id=review_id)
         
@@ -226,12 +374,52 @@ class ReviewCommentView(APIView):
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="리뷰 댓글 조회",
+        description="특정 리뷰에 작성된 모든 댓글을 조회",
+        parameters=[
+            OpenApiParameter(
+                name="review_id",
+                type=int,
+                description="댓글을 조회할 리뷰의 ID",
+                required=True
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=ReviewCommentSerializer(many=True),
+                description="리뷰에 작성된 댓글 목록"
+            ),
+            404: OpenApiResponse(description="리뷰를 찾을 수 없습니다."),
+        },
+    )
     def get(self, request, review_id):
         review = get_object_or_404(Review, id=review_id)
         comments = ReviewComment.objects.filter(review=review)
         serializer = ReviewCommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="리뷰 댓글 수정",
+        description="작성된 리뷰 댓글을 수정. 댓글 작성자만 수정할 수 있음",
+        parameters=[
+            OpenApiParameter(
+                name="comment_id",
+                type=int,
+                description="수정할 댓글의 ID",
+                required=True
+            )
+        ],
+        request=ReviewCommentSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=ReviewCommentSerializer,
+                description="수정된 댓글"
+            ),
+            403: OpenApiResponse(description="수정 권한이 없습니다."),
+            404: OpenApiResponse(description="댓글을 찾을 수 없습니다."),
+        },
+    )
     def put(self, request, comment_id):
         comment = get_object_or_404(ReviewComment, id=comment_id)
         if comment.user != request.user:
@@ -244,6 +432,23 @@ class ReviewCommentView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="리뷰 댓글 삭제",
+        description="리뷰 댓글을 삭제. 댓글 작성자만 삭제할 수 있음",
+        parameters=[
+            OpenApiParameter(
+                name="comment_id",
+                type=int,
+                description="삭제할 댓글의 ID",
+                required=True
+            )
+        ],
+        responses={
+            204: OpenApiResponse(description="댓글 삭제 성공"),
+            403: OpenApiResponse(description="삭제 권한이 없습니다."),
+            404: OpenApiResponse(description="댓글을 찾을 수 없습니다."),
+        },
+    )
     def delete(self, request, comment_id):
         comment = get_object_or_404(ReviewComment, id=comment_id)
         if comment.user != request.user:
@@ -254,17 +459,52 @@ class ReviewCommentView(APIView):
 
 # 플레이리스트 기능
 
-
 class PlaylistView(APIView):
-    # 플레이리스트 추가
+    
+    @extend_schema(
+        summary="플레이리스트 생성",
+        description="새로운 플레이리스트를 생성 영화는 생성 시 추가하지 않음. 나중에 /update 주소를 통해 추가할 수 있음",
+        request=CollectionSerializer,
+        responses={
+            201: OpenApiResponse(
+                response=CollectionSerializer,
+                description="생성된 플레이리스트"
+            ),
+            400: OpenApiResponse(description="잘못된 요청 데이터"),
+        },
+    )
     def post(self, request):
-        serializer = CollectionSerializer(data=request.data)
+        serializer = CollectionSerializer(data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            collection = serializer.save(user=request.user)  # Collection 생성
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 플레이리스트 가져오기
+    @extend_schema(
+        summary="플레이리스트 조회",
+        description="사용자의 모든 플레이리스트를 조회하거나 특정 플레이리스트의 상세 정보를 가져옴",
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="플레이리스트를 조회할 사용자 ID",
+                required=True
+            ),
+            OpenApiParameter(
+                name="playlist_id",
+                type=int,
+                description="조회할 특정 플레이리스트 ID (선택 사항)",
+                required=False
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(
+                response=CollectionSerializer(many=True),
+                description="플레이리스트 목록 또는 특정 플레이리스트 상세 정보"
+            ),
+            404: OpenApiResponse(description="플레이리스트를 찾을 수 없습니다."),
+        },
+    )
     def get(self, request, user_id, playlist_id=None):
         if playlist_id:
             playlist = get_object_or_404(Collection, id=playlist_id)
@@ -275,37 +515,81 @@ class PlaylistView(APIView):
             serializer = CollectionSerializer(playlists, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    # 플레이리스트 삭제
+    @extend_schema(
+        summary="플레이리스트 삭제",
+        description="특정 플레이리스트를 삭제. 플레이리스트 소유자만 삭제할 수 있음",
+        parameters=[
+            OpenApiParameter(
+                name="playlist_id",
+                type=int,
+                description="삭제할 플레이리스트 ID",
+                required=True
+            ),
+        ],
+        responses={
+            204: OpenApiResponse(description="플레이리스트 삭제 성공"),
+            403: OpenApiResponse(description="삭제 권한이 없습니다."),
+            404: OpenApiResponse(description="플레이리스트를 찾을 수 없습니다."),
+        },
+    )
     def delete(self, request, playlist_id):
         playlist = get_object_or_404(
             Collection, id=playlist_id, user=request.user)
         playlist.delete()
         return Response({'message': '플레이리스트가 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
 
-    # 플레이리스트 수정
+# 플레이리스트 업데이트
+
+class UpdatePlaylistView(APIView):
+    @extend_schema(
+        summary="플레이리스트 제목 수정",
+        description="플레이리스트의 제목을 수정",
+        parameters=[
+            OpenApiParameter(name="playlist_id", type=int, description="수정할 플레이리스트 ID"),
+        ],
+        responses={
+            200: OpenApiResponse(description="수정된 플레이리스트 제목"),
+            404: OpenApiResponse(description="플레이리스트를 찾을 수 없습니다."),
+        },
+    )
     def put(self, request, playlist_id):
-        playlist = get_object_or_404(
-            Collection, id=playlist_id, user=request.user)
-        data = request.data
+        playlist = get_object_or_404(Collection, id=playlist_id, user=request.user)
+        playlist.title = request.data.get('title', playlist.title)
+        playlist.save()
+        return Response({'message': '제목 수정 완료'}, status=status.HTTP_200_OK)    
 
-        # 제목 수정
-        if 'title' in data:
-            serializer = CollectionSerializer(
-                playlist, data={'title': data['title']}, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-
-        # 영화 추가
-        if 'movies_add' in data:
-            for movie_data in data['movies_add']:
-                movie = get_object_or_404(Movie, id=movie_data.get('id'))
-                playlist.movies.add(movie)
-
-        # 영화 삭제
-        if 'movies_remove' in data:
-            for movie_data in data['movies_remove']:
-                movie = get_object_or_404(Movie, id=movie_data.get('id'))
-                playlist.movies.remove(movie)
-
-        new_serializer = CollectionSerializer(playlist)
-        return Response(new_serializer.data, status=status.HTTP_200_OK)
+    @extend_schema(
+        summary="플레이리스트에 영화 추가",
+        description="플레이리스트에 영화를 추가",
+        parameters=[
+            OpenApiParameter(name="playlist_id", type=int, description="플레이리스트 ID"),
+        ],
+        responses={
+            200: OpenApiResponse(description="추가된 영화 목록"),
+            404: OpenApiResponse(description="플레이리스트를 찾을 수 없습니다."),
+        },
+    )
+    def post(self, request, playlist_id):
+        playlist = get_object_or_404(Collection, id=playlist_id, user=request.user)
+        movie_ids = request.data.get('movies', [])
+        movies_to_add = Movie.objects.filter(id__in=movie_ids)
+        playlist.movies.add(*movies_to_add)
+        return Response({'message': '영화 추가 완료'}, status=status.HTTP_200_OK)
+    
+    @extend_schema(
+        summary="플레이리스트에서 영화 제거",
+        description="플레이리스트에서 영화를 제거",
+        parameters=[
+            OpenApiParameter(name="playlist_id", type=int, description="플레이리스트 ID"),
+        ],
+        responses={
+            200: OpenApiResponse(description="제거된 영화 목록"),
+            404: OpenApiResponse(description="플레이리스트를 찾을 수 없습니다."),
+        },
+    )
+    def delete(self, request, playlist_id):
+        playlist = get_object_or_404(Collection, id=playlist_id, user=request.user)
+        movie_ids = request.data.get('movies', [])
+        movies_to_remove = Movie.objects.filter(id__in=movie_ids)
+        playlist.movies.remove(*movies_to_remove)
+        return Response({'message': '영화 제거 완료'}, status=status.HTTP_200_OK)
