@@ -42,11 +42,23 @@ class MovieDetailSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         print(request.user)
         if request and request.user.is_authenticated:
-            user = User.objects.get(id=request.user.id)
-            print('사용자가 찜한 영화들\n', user.kept_movies.all())
-            print(f"Checking if user {user.id} has kept the movie {obj.id}")
-            return user.kept_movies.filter(id=obj.id).exists()
-        return False
+            user = request.user
+            
+            # 유저가 찜한 영화인지 확인
+            is_kept = user.kept_movies.filter(id=obj.id).exists()
+            
+            # 해당 영화에 대한 유저 리뷰 조회
+            review = Review.objects.filter(user=user, movie=obj).first()  # 유저와 영화에 매칭된 리뷰 검색
+            rating = review.rating if review else None  # 리뷰가 존재하면 rating 가져오기
+            
+            return {
+                "is_kept": is_kept,
+                "rating": rating  # 유저가 남긴 리뷰의 rating 값
+            }
+        return {
+            "is_kept": False,
+            "rating": None
+        }
 
 
 class EmotionSerializer(serializers.ModelSerializer):
