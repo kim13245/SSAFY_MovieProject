@@ -4,9 +4,11 @@ import Main from '@/views/Main.vue'
 import MindCollection from '@/views/MindCollection.vue'
 import MovieDetail from '@/views/MovieDetail.vue'
 import MovieSearch from '@/views/MovieSearch.vue'
+import OtherProfile from '@/views/otherProfile.vue'
 import Profile from '@/views/Profile.vue'
 import RivewDetail from '@/views/RivewDetail.vue'
 import SignUp from '@/views/SignUp.vue'
+
 
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -59,7 +61,11 @@ const router = createRouter({
       name:'review',
       component:RivewDetail,
     },
-
+    {
+      path:'/profile/other/:user_id',
+      name:'otherprofile',
+      component:OtherProfile
+    },
   ],
 })
 

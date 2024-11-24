@@ -79,24 +79,30 @@ class ReviewSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
     nickname = serializers.CharField(
         source='user.nickname', read_only=True)  # user의 nickname 추가
-    movie = MovieListSerializer(read_only=True)
+    movie_title = serializers.CharField(source='movie.title', read_only=True)
+    poster_path = serializers.CharField(source='movie.poster_path', read_only=True)
     comments = ReviewCommentSerializer(
         many=True, read_only=True, source='comments_set')
 
     class Meta:
         model = Review
         fields = ('id', 'content', 'rating', 'likes_count', 'is_liked',
-                  'create_review', 'nickname', 'user', 'movie', 'emotion', 'comments')
+                  'create_review', 'nickname', 'user', 'movie', 'movie', 'movie_title',
+                  'poster_path', 'emotion', 'comments')
         read_only_fields = ('id', 'create_review', 'user', 'is_liked')
 
     def get_likes_count(self, obj):
         return obj.likes.count()
 
     def get_is_liked(self, obj):
+        print('get_is_liked 호출됨')
         request = self.context.get('request', None)
-        print(self.context)
-        if request and hasattr(request, 'user'):
+        print(request.user.is_authenticated)
+
+        if request and hasattr(request, 'user') :
+            
             user = request.user
+            print(f"User: {user}, Likes: {list(obj.likes.values_list('id', flat=True))}")
             return obj.likes.filter(id=user.id).exists()
         return False
 
