@@ -1,8 +1,8 @@
 <template>
     <div>
         <h1>보고싶은 영화</h1>
-        <div>
-            <WishMovieItem v-for="whishMovie in whishMovies" :key="whishMovie.id" :whishMovie="whishMovie"/>
+        <div class="poster-list">
+            <WishMovieItem v-for="whishMovie in whishMovies" :key="whishMovie.id" :whishMovie="whishMovie" class="poster-list-item"/>
         </div>
     </div>
 </template>
@@ -43,5 +43,13 @@ onMounted( async() => {
 </script>
 
 <style scoped>
-
+.poster-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    padding: 0;
+}
+poster-list-item {
+    width: calc((100% - 4em) / 5);
+}
 </style>
