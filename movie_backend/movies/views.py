@@ -3,7 +3,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, Comment, ReviewComment, Collection
 from .serilalizers import MovieDetailSerializer, MovieListSerializer, ReviewSerializer, ReviewCommentSerializer, CollectionSerializer
@@ -31,6 +31,7 @@ class MovieListView(APIView):
 # 영화 세부 정보 가져오기
 
 class MovieDetailView(APIView):
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="영화 상세 데이터",
         parameters=[
@@ -45,10 +46,10 @@ class MovieDetailView(APIView):
     )
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
+        credits_data = get_cast_crew(movie_id)
         if not movie:
             print('현재 선택한 영화가 DB에 없음')
             new_movie = get_movie_details(movie_id)
-            credits_data = get_cast_crew(movie_id)  
             genre_ids = [genre['id'] for genre in new_movie.get('genres', [])]
             movie = Movie.objects.create(
                 id=movie_id,
@@ -122,16 +123,17 @@ class MovieDetailView(APIView):
                 )
                 # 해당 영화에 제작진 추가
                 movie.crew.add(crew)
-                
         reviews = Review.objects.filter(movie=movie_id).select_related('user')
         movie_serializer = MovieDetailSerializer(movie, context={'request': request})
-        review_serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+        review_serializer = ReviewSerializer(reviews, many=True)
         response_data = {
             "movie": movie_serializer.data,
             "reviews": review_serializer.data,
+            "credits": credits_data
         }
-        print(response_data)
+        # print(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
+
 
 # 영화 검색 기능
 

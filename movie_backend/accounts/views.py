@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework import status, serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password  # 비밀번호 해싱
-from rest_framework.permissions import IsAuthenticated # 사용자 권한 인증
+from rest_framework.permissions import IsAuthenticated, AllowAny # 사용자 권한 인증
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
@@ -189,6 +189,7 @@ class MyProfileView(APIView):
 
 # 다른 유저 프로필
 class UserProfileView(APIView):
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="다른 유저 프로필 조회",
         description="특정 유저의 프로필 정보를 조회",
@@ -247,7 +248,7 @@ class UserFollowView(APIView):
 
 # 유저가 쓴 리뷰 목록 들고오기
 class UserReviewView(APIView):
-    
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="사용자가 작성한 리뷰 조회",
         description="특정 사용자가 작성한 모든 리뷰를 조회",
@@ -274,7 +275,7 @@ class UserReviewView(APIView):
 
 # 유저가 쓴 리뷰 댓글 목록 들고오기
 class UserReviewCommentView(APIView):
-    
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="사용자가 작성한 리뷰 댓글 조회",
         description="특정 사용자가 작성한 모든 리뷰 댓글을 조회",
@@ -301,6 +302,7 @@ class UserReviewCommentView(APIView):
 
 # 유저가 찜한 영화 목록 들고오기
 class UserMovieView(APIView):
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="찜한 영화 목록 조회",
         description="특정 사용자가 찜한 영화의 목록을 반환(각 영화에 대한 사용자의 리뷰 평점(user_rating)도 포함)",
