@@ -1,28 +1,60 @@
 <template>
-    <div v-if="Rivew_id">
-        <h1>Detail</h1>
-        <p>{{ Rivew_id }}</p>
-        <p>{{ reviewInfo }}</p>
-    </div>
-    <hr>
-    <div>
-        <form @submit.prevent="createComment">
-            <input type="text" v-model.trim="comment">
-            <button>생성</button>
-        </form>
-    </div>
-    <hr>
-    <div>
-        <button>좋아요</button>
-    </div>
-    <hr>
-    <div>
-        <div v-for="comment in comments" :key="comment.id">
-            {{ comment.nickname }}
-            {{ comment.content }}
-            <button @click="deleteComment(comment.id)">click</button>
+    <div v-if="Rivew_id" class="container">
+        <div class="review-head">
+            <div class="user-info">
+                <RouterLink :to="{name:'profile', params:{ user_id: reviewInfo.review.user } }" class="link" style="color: white;">
+                    {{ reviewInfo.review.nickname }}
+                </RouterLink>
+                <p class="movie-title">
+                    {{ reviewInfo.review.movie_title }}
+                </p>
+                <div class="img">
+                    <img src="@/assets/moviedetail/star-active.png" alt="star-img">
+                    <p>{{ reviewInfo.review.rating }}</p>
+                </div>
+                <div class="like-head">
+                    <button class="like">like</button>
+                    <p>
+                        {{ reviewInfo.review.likes_count }}
+                    </p>
+                </div>
+            </div>
+            <div class="poster">
+                <img :src="'https://image.tmdb.org/t/p/original' + reviewInfo.review.poster_path" alt="">
+            </div>
+            
+        </div>
+        <div class="review-content">
+            <p>
+                {{ reviewInfo.review.content }}
+            </p>
+        </div>
+        <div class="comment">
+            <h2>코멘트</h2>
+            <hr>
+            <div>
+                <div v-for="comment in comments" :key="comment.id" class="comment-head">
+                    <div>
+                        <p class="comment-nickname">
+                            {{ comment.nickname }}
+                        </p>
+                        <p class="comment-content">
+                            {{ comment.content }}
+                        </p>
+                    </div>
+                    <button @click="deleteComment(comment.id)" class="comment-button">삭제</button>
+                </div>
+            </div>
+            <form @submit.prevent="createComment" class="input">
+                <input type="text" v-model.trim="comment" class="custom-input" placeholder="여러분의 의견을 들려주세요.">
+                <button>생성</button>
+            </form>
         </div>
     </div>
+
+
+
+    
 </template>
 
 <script setup>
@@ -30,7 +62,8 @@ import { useMovieStore } from '@/stores/movie';
 const store = useMovieStore()
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
+
 
 const route = useRoute()
 const Rivew_id = ref(null)
@@ -119,5 +152,169 @@ const deleteComment = function(CommentId) {
 </script>
 
 <style scoped>
+* {
+    border-color: #0c0c0c;
+}
+.container {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr repeat(10, 1fr) 1fr;
+    padding: 0;
 
+}
+.review-head {
+    grid-column: 4/10;
+    grid-row: 1;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+    border: 1px solid #323232;
+    border-radius: 10px;
+    padding: 1em;
+    margin-top: 50px;
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+.img {
+    display: flex;
+    padding: 0.2em 0.8em;
+    background-color: #282828;
+    border-radius: 50px;
+    width: 60px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    margin-top: 0.5em;
+}
+.img img {
+    width: 100%;
+    height: 100%;
+}
+.user-info a {
+    font-size: 1.2em;
+}
+.movie-title {
+    font-size: 0.8em;
+    color: #6f6f6f;
+}
+.like-head {
+    display: flex;
+    align-items: center;
+}
+.like {
+    width: 60px;
+    padding: 1em;
+    text-align: center
+}
+.poster {
+    width: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.poster img {
+    width: 100%;
+    object-fit: cover;
+    object-position: center; /* 이미지를 중앙에 배치 */
+}
+
+.review-content {
+    grid-column: 4/10;
+    grid-row: 2;
+    border: 1px solid #323232;
+    border-radius: 10px;
+    padding: 1em;
+}
+.comment {
+    grid-column: 4/10;
+    grid-row: 3;
+    margin-top: 50px;
+}
+.comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.comment-nickname {
+    color: #6f6f6f;
+}
+.comment-button {
+    width: 60px;  
+    padding: 0.5em;  
+    font-size: 1em; 
+    border: 1px solid #6c757d;
+    border-radius: 8px;  
+    background-color: #222;  
+    color: white; 
+    outline: none;  
+    transition: all 0.3s ease; 
+    cursor: pointer;
+    text-align: center;
+}
+.comment-button:hover {
+    border-color: #61FBFF;  
+    background-color: #61FBFF;  
+    color: #000d11;
+    font-weight: bold;
+}
+.input {
+    display: flex;
+    margin-top: 2em;
+}
+.custom-input {
+    width: 90%;    
+    padding: 0.8em 1em;  
+    font-size: 1em;  
+    border: 2px solid #6c757d;  
+    border-radius: 8px;  
+    background-color: #222;
+    color: white;
+    outline: none; 
+    transition: all 0.3s ease; 
+}
+
+.custom-input::placeholder {
+    color: #888;  /* 플레이스홀더 텍스트 색상 */
+}
+.custom-input:hover {
+    border-color: #61FBFF;  
+    background-color: #333; 
+}
+.custom-input:hover::placeholder {
+    color: #61FBFF;
+}
+
+.custom-input:focus {
+    border-color: #61FBFF;  
+    background-color: #333; 
+}
+
+.custom-input:focus::placeholder {
+    color: #61FBFF;  
+}
+button {
+    width: 10%;  
+    max-width: 400px; 
+    padding: 0.8em 1em;  
+    font-size: 1em; 
+    border: 2px solid #6c757d;
+    border-radius: 8px;  
+    background-color: #222;  
+    color: white; 
+    outline: none;  
+    transition: all 0.3s ease; 
+    cursor: pointer;
+}
+button:hover {
+    border-color: #61FBFF;  
+    background-color: #61FBFF;  
+    color: #000d11;
+    font-weight: bold;
+}
 </style>

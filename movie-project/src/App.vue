@@ -20,6 +20,6 @@ import Nav from './components/Nav.vue';
 <style scoped>
 /* Nav의 높이를 설정 (예: 60px) */
 .Nav {
-  height: 60px; 
+  height: 70px; 
 }
 </style>

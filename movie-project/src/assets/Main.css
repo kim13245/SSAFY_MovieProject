@@ -25,9 +25,19 @@
   }
   
 
-@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+  
+  @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
   /* HTML 기본 폰트와 배경 설정 */
   /* spoqasans 기본 폰트 사용 */
+
+  /* @font-face 추가 */
+@font-face {
+    font-family: 'CWDangamAsac-Bold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/CWDangamAsac-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 html {
     font-size: 16px; /* 기본 폰트 크기 */
     font-family: 'Spoqa Han Sans Neo', 'sans-serif'; /* 기본 폰트 */
