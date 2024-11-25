@@ -20,15 +20,15 @@
                                     <div class="follow-info">
                                         <div class="followers">
                                             <p>팔로워</p>
-                                            <p> {{ userInfo.followers_count }} </p>
+                                            <p> {{ followerscount }} </p>
                                         </div>
                                         <div v-if="userInfo.id === store.userId" class="followings">
                                             <p>팔로잉</p>
-                                            <p> {{ userInfo.followings_count }} </p>
+                                            <p> {{ followingscount }} </p>
                                         </div>
                                         <div v-if="userInfo.id !== store.userId" class="followings-user" @click.prevent="follow" style="cursor: pointer;">
                                             <p>팔로잉</p>
-                                            <p> {{ userInfo.followings_count }} </p>
+                                            <p> {{ followingscount }} </p>
                                         </div>
                                         
                                     </div>
@@ -125,6 +125,13 @@ const follow = function() {
         },
     }).then(() => {
         console.log('성공s')
+        if (result.value === false) {
+            followerscount.value ++;
+            result.value = true
+        } else {
+            followerscount.value --;
+            result.value = false
+        }
     }).catch((err) => {
         console.error(err)
     })
@@ -148,6 +155,8 @@ const out = function() {
     })
 }
 
+const followerscount = ref(0)
+const followingscount = ref(0)
 const getUserInfo = function() {
     return axios({
         method: 'get',
@@ -159,7 +168,9 @@ const getUserInfo = function() {
     .then((res) => {
         console.log(res.data);
         userInfo.value = res.data;
-        result.value = isMyNicknameInFollowers(res.data.followers_nicknames,store.userId)
+        followerscount.value = userInfo.value.followers_count;
+        followingscount.value = userInfo.value.followings_count
+        result.value = isMyNicknameInFollowers(res.data.followers_names,store.username)
         console.log(result.value)
     })
     .catch((err) => {
@@ -233,6 +244,7 @@ onMounted(async () => {
     background-color: #000d11;
     border-radius: 8px;
     padding: 2em 1em;
+    box-shadow: 0px 0px 9px rgba(120, 206, 232, 0.4);
 }
 .user-profile-info {
     width: 100%;
