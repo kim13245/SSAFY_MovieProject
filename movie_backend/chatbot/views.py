@@ -28,7 +28,7 @@ class ChatbotView(APIView):
             return Response({"error": "메세지가 입력되지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             # Step 1: DB의 감정 목록 가져오기
-            all_emotions = list(Emotion.objects.value_list('name', flat=True))
+            all_emotions = list(Emotion.objects.values_list('name', flat=True))
             if not all_emotions:
                 return Response({"error":"DB에 가용한 감정이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
             
@@ -44,7 +44,7 @@ class ChatbotView(APIView):
             openai_response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "당신은 친절한 정신 상담사 입니다. 당신의 임무는 질문자의 감정을 파익하고 해당 감정에 맞는 영화를 추천하는 일입니다. 말 끝에는 이런 멘트를 기본으로 가지고 있습니다 '당신의 감정은 무엇이고 아래와 같은 영화를 추천합니다'"},
+                    {"role": "system", "content": "당신의 임무는 질문자의 감정을 파익하고 해당 감정에 맞는 영화를 추천하는 일입니다. 말 끝에는 이런 멘트를 기본으로 가지고 있습니다 '당신의 감정은 무엇이고 아래와 같은 영화를 추천합니다"},
                     {"role": "user", "content": prompt}
                 ]
             )
