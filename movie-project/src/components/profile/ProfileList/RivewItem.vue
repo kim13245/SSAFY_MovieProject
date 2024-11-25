@@ -2,6 +2,12 @@
     <div class="card">
         <div class="card-head">
             <p>{{ props.Rivew.content }}</p>
+            <div class="score">
+                <img src="@/assets/moviedetail/star-active.png" alt="star-img">
+                <p>
+                    {{ props.Rivew.rating }}
+                </p>
+            </div>
         </div>
         <RouterLink :to="{name:'review',params:{review_id:props.Rivew.id}}">상세히 보기</RouterLink>
         <button class="button" @click="DeleteRivews()">삭제</button>
@@ -61,5 +67,20 @@ const DeleteRivews = function () {
     color: white;
     padding: 0.4em;
     margin-left: 1em;
+}
+.score {
+    display: flex;
+    padding: 0.2em 0.8em;
+    background-color: #282828;
+    border-radius: 50px;
+    width: 60px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    margin-bottom: 1em;
+}
+.score img {
+    width: 20px;
 }
 </style>

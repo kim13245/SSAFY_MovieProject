@@ -35,15 +35,23 @@
     
     
             <div class="today-movie">
-                <div>
-                    <h3>오늘의 당신은</h3>
-                    <h1>어떤 기분인가요?</h1>
-                    <p>
-                        오늘 하루는 어떤 하루였나요? <br/>
-                        저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
-                    </p>
-                    <div class="today-movie-button">
-                        <RouterLink :to="{name:'mind'}">지금 체험하기</RouterLink>
+                <div class="back-img">
+                    <div class="left">
+                        <img src="@/assets/main/popcon1.png" alt="">
+                    </div>
+                    <div class="today-moive">
+                        <h3>오늘의 당신은</h3>
+                        <h1>어떤 기분인가요?</h1>
+                        <p>
+                            오늘 하루는 어떤 하루였나요? <br/>
+                            저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
+                        </p>
+                        <div class="today-movie-button">
+                            <RouterLink :to="{name:'mind'}">지금 체험하기</RouterLink>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <img src="@/assets/main/popcon2.png" alt="">
                     </div>
                 </div>
             </div>
@@ -157,13 +165,49 @@ const handleChildClick = (movieId) => {
 
     margin-top: 250px;
 }
-.today-movie div {
-    text-align: center;
+.back-img {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    
+    gap: 10em;
+}
+
+.left {
+    width: 240px;
+    animation: moveUpDown 2s ease-in-out infinite;
+}
+/* 애니메이션 정의 */
+@keyframes moveUpDown {
+  0% {
+    transform: translateY(0); /* 처음 위치 */
+  }
+  50% {
+    transform: translateY(-50px); /* 위로 50px 이동 */
+  }
+  100% {
+    transform: translateY(0); /* 다시 원래 위치로 돌아옴 */
+  }
+}
+.right {
+    width: 240px;
+    animation: moveUpDown2 3s ease-in-out infinite;
+}
+@keyframes moveUpDown2 {
+  0% {
+    transform: translateY(0); /* 처음 위치 */
+  }
+  50% {
+    transform: translateY(-50px); /* 위로 50px 이동 */
+  }
+  100% {
+    transform: translateY(0); /* 다시 원래 위치로 돌아옴 */
+  }
+}
+.today-moive {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
 }
 .today-movie h3 {
     font-size: 42px;
@@ -179,14 +223,25 @@ const handleChildClick = (movieId) => {
 }
 
 .today-movie-button {
-    margin-top: 2em;
-    width: 220px;
-    padding: 1em;
-    background-color: black;
-    color: white;
-    border-radius: 15px;
+    width: 100%;  
+    max-width: 200px; 
+    padding: 0.8em 1em;  
+    margin-top: 1.5em;
+    font-size: 1em; 
+    border: 2px solid #6c757d;
+    border-radius: 8px;  
+    background-color: #222;  
+    color: white; 
+    outline: none;  
+    transition: all 0.3s ease; 
+    cursor: pointer;
 }
-
+.today-movie-button:hover {
+    border-color: #61FBFF;  
+    background-color: #61FBFF;  
+    color: #000d11;
+    font-weight: bold;
+}
 /* movie 리스트 정렬 부분 */
 .front-movie-list {
     display: grid;
