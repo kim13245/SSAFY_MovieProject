@@ -3,6 +3,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, Comment, ReviewComment, Collection
@@ -11,8 +12,7 @@ from .get_data import get_movie_details, get_cast_crew, serch_movie, get_movie_t
 from django.shortcuts import get_object_or_404
 
 # 영화 리스트 가져오기
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+
 
 
 class MovieListView(APIView):
@@ -37,6 +37,7 @@ class MovieListView(APIView):
 
 
 class MovieDetailView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -51,7 +52,7 @@ class MovieDetailView(APIView):
             ),
         },
     )
-    @method_decorator(csrf_exempt)
+    
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
         credits_data = get_cast_crew(movie_id)
