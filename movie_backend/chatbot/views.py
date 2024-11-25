@@ -6,8 +6,10 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiRespon
 from movies.models import Movie, Genre, Emotion
 from movies.serilalizers import MovieListSerializer
 import openai
+from openai import OpenAI
 
-openai.api_key = "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"
+client = OpenAI(api_key="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")
+
 
 emotion_translations = {
     "Depressed": "우울",
@@ -35,29 +37,37 @@ class ChatbotView(APIView):
             # Step 2: OpenAI에 사용자 입력 및 감정 목록 전달
             emotion_list_str = ", ".join(all_emotions)
             prompt = (
-                f"사용자가 느낀 감정은 다음과 같습니다: '{user_input}'."
-                f"사용 가능한 감정 목록은 다음과 같습니다: '{emotion_list_str}'."
-                f"이 중에서 가장 가까운 감정을 선택하여 감정 이름을 맨 처음에 '{emotion_list_str}'처럼 영어로한 단어로 나타내고," 
-                "사용자가 느끼는 감정에 대한 답변은 모두 한국어로 해주세요."
+                f"사용자가 느낀 감정은 다음과 같습니다: '{user_input}'.\n"
+                f"사용 가능한 감정 목록은 다음과 같습니다: '{emotion_list_str}'.\n"
+                f"응답 형식:\n"
+                f"1. 첫 줄에는 감정 목록 중에서 가장 적절한 감정을 영어로 한 단어만 작성\n"
+                f"2. 둘째 줄부터는 공감과 영화 추천을 포함한 답변을 한국어로 작성"
             )
 
-            openai_response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+            openai_response = client.chat.completions.create(
+                model="gpt-4",  # 모델명 수정
                 messages=[
-                    {"role": "system", "content": "당신의 임무는 질문자의 감정을 파익하고 해당 감정에 맞는 영화를 추천하는 일입니다. 말 끝에는 이런 멘트를 기본으로 가지고 있습니다 '당신의 감정은 무엇이고 아래와 같은 영화를 추천합니다"},
+                    {"role": "system", "content": "당신의 임무는 질문자의 감정을 파악하고 해당 감정에 맞는 영화를 추천하는 일입니다."},
                     {"role": "user", "content": prompt}
                 ]
             )
-            extracted_emotion = openai_response['choices'][0]['message']['content'].strip()
+            
+            # 응답을 줄바꿈을 기준으로 분리
+            full_response = openai_response.choices[0].message.content.strip()
+            response_parts = full_response.split('\n', 1)
+            
+            # 첫 줄은 감정, 나머지는 설명
+            emotion = response_parts[0].strip()
+            explanation = response_parts[1].strip() if len(response_parts) > 1 else ""
 
             # 응답 데이터 구성
             response_data = {
-                "user_emotion": extracted_emotion,
-                "openai_response": f"사용자 입력에서 추출된 감정은 다음과 같습니다. '{extracted_emotion}'.",
-
+                "user_emotion": emotion,
+                "openai_response": explanation
             }
+            
             return Response(response_data, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+ㅎ
