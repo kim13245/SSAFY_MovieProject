@@ -1,11 +1,5 @@
 <template>
     <div class="container">
-        <div class="form-area">
-            <form @submit.prevent="getApi" class="form">
-                <input type="text" v-model.trim="question" class="custom-input" placeholder="기분을 알려주세요.">
-                <button type="submit" class="button">질문하기</button>
-            </form>
-        </div>
         <div class="answer">
             <TransitionGroup 
                 name="message"
@@ -16,13 +10,37 @@
                 <div v-if="question" class="my-q" :key="'q'+question">
                     <p>{{ question }}</p>
                 </div>
-                <div v-if="isLoading" class="ai-q loading" :key="'loading'">
-                    <p>LOADING</p>
+                <div v-show="isLoading" class="ai-q loading" :key="'loading'">
+                    <p>당신의 감정을 분석중입니다...</p>
                 </div>
                 <div v-if="answer" class="ai-q" :key="'a'+answer.openai_response">
                     <p>{{ answer.openai_response }}</p>
                 </div>
+                <div class="movie-post" v-if="answer" @click="goDetail(movie.id)">
+                    <div>
+                        <img :src="imageUrl" alt="postr-img">
+                    </div>
+                    <p>{{ movie.title }}</p>
+                </div>
+                <div class="form-area" v-show="formview">
+                    <form @submit.prevent="getApi" class="form">
+                        <input type="text" v-model.trim="question" class="custom-input" placeholder="오늘 하루는 어떤 하루였나요?">
+                        <button type="submit" class="button">질문하기</button>
+                    </form>
+                </div>
+                
             </TransitionGroup>
+        </div>
+        <div class="componentsMind">
+            <Base v-if="checkComponents === 'base'"/>
+            <Angry v-if="checkComponents === 'Angry'"/>
+            <Anxious v-if="checkComponents === 'Anxious'" />
+            <Depressed v-if="checkComponents === 'Depressed'" />
+            <Excited v-if="checkComponents === 'Excited'" />
+            <Happy v-if="checkComponents === 'Happy'" />
+            <Helpless v-if="checkComponents === 'Helpless'" />
+            <Relaxed v-if="checkComponents === 'Relaxed'" />
+            <Tired v-if="checkComponents === 'Tired'" />
         </div>
     </div>
 </template>
@@ -30,9 +48,44 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+//페이지 임포트
+import Angry from '@/components/Mind/Angry.vue';
+import Anxious from '@/components/Mind/Anxious.vue';
+import Depressed from '@/components/Mind/Depressed.vue';
+import Excited from '@/components/Mind/Excited.vue';
+import Happy from '@/components/Mind/Happy.vue';
+import Helpless from '@/components/Mind/Helpless.vue';
+import Relaxed from '@/components/Mind/Relaxed.vue';
+import Tired from '@/components/Mind/Tired.vue';
+import Base from '@/components/Mind/Base.vue';
+
+const formview = ref(true)
 const question = ref(null)
 const answer = ref(null)
 const isLoading = ref(false)
+const movies = ref(null)
+const movie = ref(null)
+const Base_URL = 'https://image.tmdb.org/t/p/original'
+const imageUrl = ref(null)
+const router = useRouter()
+const checkComponents = ref('base')
+const getSearch = async function(moviename) {
+    axios({
+        method:'get',
+        url:`http://127.0.0.1:8000/api/v1/movies/movie_search/`,
+        params:{title:moviename}
+    }).then((res) => {
+        movies.value = res.data.results
+        movie.value = movies.value[0]
+        console.log(movie.value)
+        imageUrl.value = `${Base_URL}${movie.value.poster_path}`
+        
+    }).catch((err) => {
+        console.error(err)
+    })
+}
+
 
 const getApi = async function() {
     try {
@@ -45,15 +98,25 @@ const getApi = async function() {
                 message:question.value
             }
         }).then((res) => {
-            console.log(res.data)
+            // console.log(res.data)
+            answer.value = res.data
+            checkComponents.value = answer.value.user_emotion
+            formview.value = false
         })
-        answer.value = res.data
+        await getSearch(answer.value.recommend)
     } catch (err) {
         console.error(err)
     } finally {
         isLoading.value = false
     }
 }
+
+const goDetail = function(movieId) {
+    router.push({name:'detail', params:{movie_id:movieId}})
+}
+
+
+
 </script>
 
 <style scoped>
@@ -63,32 +126,41 @@ const getApi = async function() {
     grid-template-columns: 1fr repeat(10, 1fr) 1fr;
 }  
 .form-area {
-    margin-top: 50px;
-    grid-column: 4/10;
-    grid-row: 1;
+    margin-top: auto;
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-bottom: 30px;
+    background: rgba(0, 13, 11, 0.5); /* 투명한 흰색 */
+    padding: 0.5em;
+    border-radius: 8px;
+    
 } 
 .form {
     display: flex;
-    width: 80%;
+    width: 100%;
     gap: 0.5em;
+    justify-content: space-between;
 }
 .answer {
     grid-column: 4/10;
-    grid-row: 2;
-    border: 1px solid #333;
-    padding: 2em;
+    grid-row: 1;
+    margin-top: 50px;
+    padding-top: 2em;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: 0.5em;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 1em;
-    min-height: 50px;
+    min-height: 150px;
     transition: all 0.3s ease-out;
     height: auto;
     overflow: hidden;
+    background: rgba(0, 13, 11, 0.5); /* 투명한 흰색 */
+    backdrop-filter: blur(10px); /* 배경 흐림 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 연한 테두리 */
 }
 .my-q {
     align-self: flex-start;
@@ -98,6 +170,7 @@ const getApi = async function() {
     border-radius: 20px;
     max-width: 70%;
     text-align: left;
+    background-color: #000d11;
 }
 .loading {
     animation: glow 1.5s infinite ease-in-out;
@@ -143,7 +216,7 @@ const getApi = async function() {
 }
 
 .custom-input {
-    width: 78%;  
+    width: 85%;  
     padding: 0.5em 1em;  
     font-size: 1em;  
     border: 1px solid #6c757d;  
@@ -152,6 +225,9 @@ const getApi = async function() {
     color: white;
     outline: none; 
     transition: all 0.3s ease; 
+}
+.button {
+    width: 15%;
 }
 .custom-input::placeholder {
     color: #888;  /* 플레이스홀더 텍스트 색상 */
@@ -191,4 +267,22 @@ button:hover {
     font-weight: bold;
 }
 
+
+
+
+.movie-post {
+    align-self: flex-end;
+    width: 200px;
+    cursor: pointer;
+}
+.movie-post div {
+    border-radius: 10px;
+    border: 1px solid #61FBFF;
+    overflow: hidden;
+}
+
+.componentsMind {
+    grid-column: 4/10;
+    grid-row: 3;
+}
 </style>

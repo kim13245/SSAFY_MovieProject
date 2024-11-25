@@ -55,11 +55,18 @@
                     </div>
                 </div>
             </div>
-    
-            <div class="revew-movie">
-                <div class="week-movie-title">
-                    <h1>이런 리뷰 어떤가요?</h1>   
-                </div>
+            <div class="title">
+                <h1>이런 리뷰 어떤가요?</h1>
+                <p>여러 리뷰를 한번에 확인해보세요!</p>
+                <hr>
+            </div>
+            <div class="head" v-if="reviews">
+                <RivewItemComunty 
+                    v-for="review in reviews"
+                    :key="review.id"
+                    :Rivew="review"
+                    class="list-item"
+                />
             </div>
         </div>
 
@@ -68,7 +75,7 @@
 
 <script setup>
 
-import { onMounted, nextTick } from 'vue';
+import { onMounted, nextTick, ref } from 'vue';
 import $ from 'jquery';
 import 'slick-carousel';
 import { useMovieStore } from '@/stores/movie';
@@ -76,17 +83,30 @@ import MoviePost from '@/components/Main/moviePost.vue';
 import BestMovie from '@/components/Main/bestMovie.vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import RivewItemComunty from '@/components/comunty/RivewItemComunty.vue';
 const router = useRouter()
 
 // 영화 리스트 들고오기
 const store = useMovieStore()
 
+const reviews = ref(null)
+const getReview = async function() {
+    axios({
+        method:'get',
+        url:`http://127.0.0.1:8000/api/v1/movies/allreviews/`
+    }).then((res) => {
+        reviews.value = res.data
+    }).catch((err) => {
+        console.error(err)
+    })
+}
 
 onMounted(async() => {
     //비동기 함수로 먼저 api를 먼저 불러오고
     try{
         await store.apimovieBest();
         await store.apiMovie();
+        await getReview();
         // 슬라이더 초기화
         nextTick(() => {
             // DOM 업데이트 후 슬라이더 초기화
@@ -174,35 +194,37 @@ const handleChildClick = (movieId) => {
 
 .left {
     width: 240px;
-    animation: moveUpDown 2s ease-in-out infinite;
+    animation: moveUpDown1 2s ease-in-out infinite;
 }
 /* 애니메이션 정의 */
-@keyframes moveUpDown {
+@keyframes moveUpDown1 {
   0% {
-    transform: translateY(0); /* 처음 위치 */
+    transform: translateY(0) rotate(0deg); /* 처음 위치와 회전 */
   }
   50% {
-    transform: translateY(-50px); /* 위로 50px 이동 */
+    transform: translateY(-50px) rotate(-15deg); /* 위로 50px 이동하고 15도 회전 */
   }
   100% {
-    transform: translateY(0); /* 다시 원래 위치로 돌아옴 */
+    transform: translateY(0) rotate(0deg); /* 다시 원래 위치로 돌아오고 회전 리셋 */
   }
 }
+
 .right {
     width: 240px;
     animation: moveUpDown2 3s ease-in-out infinite;
 }
 @keyframes moveUpDown2 {
   0% {
-    transform: translateY(0); /* 처음 위치 */
+    transform: translateY(0) rotate(0deg); /* 처음 위치와 회전 */
   }
   50% {
-    transform: translateY(-50px); /* 위로 50px 이동 */
+    transform: translateY(-50px) rotate(15deg); /* 위로 50px 이동하고 15도 회전 */
   }
   100% {
-    transform: translateY(0); /* 다시 원래 위치로 돌아옴 */
+    transform: translateY(0) rotate(0deg); /* 다시 원래 위치로 돌아오고 회전 리셋 */
   }
 }
+
 .today-moive {
     display: flex;
     flex-direction: column;
@@ -266,8 +288,28 @@ const handleChildClick = (movieId) => {
     margin-top: 250px;
 }
 
-
-
+.title {
+    grid-column: 4/10;
+    grid-row: 6;
+    margin-top: 200px;
+}
+.title hr {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-color: #333;
+}
+.head {
+    grid-column: 4/10;
+    grid-row: 7; 
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1em;
+    padding: 0;
+}
+.list-item {
+    width: calc((100% - 3em) / 4);
+}
 /* 슬라이드 이미지 위에 그라데이션 추가 */
 .slider {
     margin-top: 0;
