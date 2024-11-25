@@ -54,7 +54,7 @@ class Movie(models.Model):
     genres = models.ManyToManyField('Genre', related_name='genres')  # 장르 ID
     cast = models.ManyToManyField('Cast', related_name='movies')  # 출연진
     crew = models.ManyToManyField('Crew', related_name='movies')  # 제작진
-
+    trailer = models.CharField(max_length=100, null=True, blank=True) #영화 트레일러
 
 class Community(models.Model):
     title = models.CharField(max_length=255)  # 제목

@@ -1,7 +1,7 @@
 import time
 from django.core.management.base import BaseCommand
 from movies.models import Genre, Movie, Cast, Crew, Person
-from movies.get_data import get_genres, get_movies_by_genre, get_movie_details, get_cast_crew
+from movies.get_data import get_genres, get_movie_trailer, get_movies_by_genre, get_movie_details, get_cast_crew
 
 # 다 하고 dumbdata
 # python manage.py dumpdata movies --indent 4 > movies_data.json
@@ -90,6 +90,20 @@ class Command(BaseCommand):
                     except Genre.DoesNotExist:
                         self.stderr.write(f"장르 ID {genre_id}가 DB에 없습니다.")
 
+                # 디버깅을 위해 반환값 출력 추가
+                trailer_data = get_movie_trailer(movie.title)
+                print("Trailer Data:", trailer_data)  # 실제로 어떤 데이터가 오는지 확인
+
+                # 데이터 형태에 따른 안전한 처리
+                if isinstance(trailer_data, dict) and 'videoId' in trailer_data:
+                    trailer_id = trailer_data['videoId']
+                    movie.trailer = trailer_id
+                    movie.save()
+                else:
+                    print(f"'{movie.title}' 영화의 트레일러를 찾을 수 없습니다.")
+                    # 트레일러를 찾지 못한 경우 None으로 설정하거나 건너뛰기
+                    movie.trailer = None
+                    movie.save()
                 # 4. 출연진 목록 가져와서 DB 저장
                 time.sleep(0.25)
                 credits_data = get_cast_crew(movie_id)
