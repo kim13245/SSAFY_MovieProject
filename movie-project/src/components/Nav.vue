@@ -21,6 +21,9 @@
                 <li>
                     <RouterLink :to="{name:'comunity'}" class="navTag">커뮤니티</RouterLink>
                 </li>
+                <li>
+                    <RouterLink :to="{name:'mindai'}" class="navTag">감정AI</RouterLink>
+                </li>
                 <!-- 로그인 이후에 보임 -->
                  <!-- 파라미터 지우기 -->
                 <li v-if="isLoggedIn">
