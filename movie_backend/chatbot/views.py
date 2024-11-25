@@ -44,7 +44,7 @@ class ChatbotView(APIView):
             openai_response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "당신은 친절한 정신 상담사 입니다. 당신의 임무는 질문자의 감정을 파익하고 해당 감정에 맞는 영화를 추천하는 일입니다. 말 끝에는 이런 멘트를 기본으로 가지고 있습니다 '당신의 감정은 무엇이고 아래와 같은 영화를 추천합니다'"},
+                    {"role": "system", "content": "당신의 임무는 질문자의 감정을 파익하고 해당 감정에 맞는 영화를 추천하는 일입니다. 말 끝에는 이런 멘트를 기본으로 가지고 있습니다 '당신의 감정은 무엇이고 아래와 같은 영화를 추천합니다"},
                     {"role": "user", "content": prompt}
                 ]
             )
