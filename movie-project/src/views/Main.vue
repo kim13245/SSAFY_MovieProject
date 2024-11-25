@@ -41,7 +41,7 @@
                     </div>
                     <div class="today-moive">
                         <h3>오늘의 당신은</h3>
-                        <h1>어떤 기분인가요?</h1>
+                        <h1>어떤 <span class="serch">기분</span>인가요?</h1>
                         <p>
                             오늘 하루는 어떤 하루였나요? <br/>
                             저희는 당신의 하루를 위로하고 함께해줄 영화를 추천드리겠습니다.
@@ -230,6 +230,11 @@ const handleChildClick = (movieId) => {
     flex-direction: column;
     text-align: center;
     align-items: center;
+}
+.serch {
+    color: #61FBFF; 
+    font-weight: 800; 
+    text-shadow: 0px 0px 9px rgba(120, 206, 232, 0.802);
 }
 .today-movie h3 {
     font-size: 42px;
