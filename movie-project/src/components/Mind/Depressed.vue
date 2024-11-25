@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h1>check1</h1>
-        <h1>BUT 우울1</h1>
+        <h1>우울</h1>
     </div>
     <div class="MovieList" v-if="store.MindMoveList">
         <MindMoviePoster v-for="movie in store.MindMoveList" :key="movie.id" :movie="movie" class="movie-poster"/>

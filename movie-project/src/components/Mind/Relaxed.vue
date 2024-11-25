@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>check1</h1>
         <h1>편안함</h1>
     </div>
     <div class="MovieList" v-if="store.MindMoveList">

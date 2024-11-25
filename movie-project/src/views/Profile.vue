@@ -66,9 +66,6 @@
                             <li 
                                 @click="isPage='WishMovie'"
                                 :class="{ 'active': isPage === 'WishMovie' }">보고싶은 영화</li>
-                            <li 
-                                @click="isPage='PlayList'"
-                                :class="{ 'active': isPage === 'PlayList' }">플레이 리스트</li>
                         </ul>
                     </div>
                     <Rivews v-if="isPage === 'Rivews'" :userInfo="userInfo"/>
