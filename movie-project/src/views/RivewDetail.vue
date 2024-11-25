@@ -46,7 +46,7 @@
                             {{ comment.content }}
                         </p>
                     </div>
-                    <button @click="deleteComment(comment.id)" class="comment-button">삭제</button>
+                    <button v-if="comment.user === store.userId" @click="deleteComment(comment.id)" class="comment-button">삭제</button>
                 </div>
             </div>
             <form @submit.prevent="createComment" class="input">
@@ -110,6 +110,7 @@ const getComments = async function() {
         url:`http://127.0.0.1:8000/api/v1/movies/reviews/${Rivew_id.value}/comments/`
     }).then((res) => {
         comments.value = res.data
+        console.log(comments.value)
     }).catch((err) => {
         console.error(err)
     })
@@ -296,6 +297,9 @@ const checkLike = function() {
     grid-column: 4/10;
     grid-row: 3;
     margin-top: 50px;
+}
+.comment hr {
+    margin-bottom: 1em;
 }
 .comment-head {
     display: flex;
