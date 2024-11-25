@@ -6,6 +6,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/movies/', include('movies.urls')),
     path('api/v1/accounts/', include('accounts.urls')),
+    path('api/v1/chatbot/', include('chatbot.urls')),
     # OpenAPI 스키마
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Swagger UI

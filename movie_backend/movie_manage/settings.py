@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'movies',
     'accounts',
+    'chatbot',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
