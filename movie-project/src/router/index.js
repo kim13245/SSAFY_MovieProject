@@ -1,6 +1,7 @@
 import Comunity from '@/views/Comunity.vue'
 import Login from '@/views/Login.vue'
 import Main from '@/views/Main.vue'
+import Mind from '@/views/mind.vue'
 import MindCollection from '@/views/MindCollection.vue'
 import MovieDetail from '@/views/MovieDetail.vue'
 import MovieSearch from '@/views/MovieSearch.vue'
@@ -66,6 +67,11 @@ const router = createRouter({
       name:'otherprofile',
       component:OtherProfile
     },
+    {
+      path:'/mindAi',
+      name:'mindai',
+      component: Mind
+    }
   ],
 })
 

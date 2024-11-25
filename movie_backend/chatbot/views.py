@@ -28,7 +28,7 @@ class ChatbotView(APIView):
             return Response({"error": "메세지가 입력되지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             # Step 1: DB의 감정 목록 가져오기
-            all_emotions = list(Emotion.objects.value_list('name', flat=True))
+            all_emotions = list(Emotion.objects.values_list('name', flat=True))
             if not all_emotions:
                 return Response({"error":"DB에 가용한 감정이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
             
