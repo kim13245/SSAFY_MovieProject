@@ -1,13 +1,13 @@
 <template>
     <div class="container">
-        <div class="answer">
+        <div class="answer" :style="{ marginTop: answerMarginTop }">
             <TransitionGroup 
                 name="message"
                 enter-active-class="animate-enter"
                 enter-from-class="enter-from"
                 enter-to-class="enter-to"
             >
-                <div v-if="question" class="my-q" :key="'q'+question">
+                <div v-if="question" class="my-q">
                     <p>{{ question }}</p>
                 </div>
                 <div v-show="isLoading" class="ai-q loading" :key="'loading'">
@@ -86,11 +86,13 @@ const getSearch = async function(moviename) {
     })
 }
 
+const answerMarginTop = ref('400px')  // 기본 margin-top 값
 
 const getApi = async function() {
     try {
         isLoading.value = true
         answer.value = null
+        answerMarginTop.value = '100px'  // margin-top 값 변경
         const res = await axios({
             method:'post',
             url:`http://127.0.0.1:8000/api/v1/chatbot/chat/`,
@@ -141,15 +143,17 @@ const goDetail = function(movieId) {
     gap: 0.5em;
     justify-content: space-between;
 }
+
 .answer {
-    grid-column: 4/10;
+    grid-column: 5/9;
     grid-row: 1;
     margin-top: 50px;
+    margin-bottom: 100px;
     padding-top: 2em;
     padding-left: 1.5em;
     padding-right: 1.5em;
     padding-bottom: 0.5em;
-    border-radius: 10px;
+    border-radius: 25px;
     display: flex;
     flex-direction: column;
     gap: 1em;
@@ -159,7 +163,7 @@ const goDetail = function(movieId) {
     overflow: hidden;
     background: rgba(0, 13, 11, 0.5); /* 투명한 흰색 */
     backdrop-filter: blur(10px); /* 배경 흐림 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+    box-shadow: 0px 0px 12px rgba(120, 206, 232, 0.502);
     border: 1px solid rgba(255, 255, 255, 0.3); /* 연한 테두리 */
 }
 .my-q {
