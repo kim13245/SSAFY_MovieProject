@@ -29,7 +29,8 @@ class ChatbotView(APIView):
                 f"응답 형식 예시:\n"
                 f"1. 첫 줄에는 감정 목록 중에서 가장 적절한 감정을 영어로 한 단어만 작성\n"
                 f"2. 둘째 줄에는 추천하는 영화 제목만 한글로 작성\n"
-                f"3. 셋째 줄부터는 공감과 영화 추천을 포함한 답변을 한국어로 작성"
+                f"3. 셋째 줄부터는 공감과 영화 추천을 포함한 답변을 한국어로 작성\n"
+                f"반드시 TMDB에 등록된 영화만 추천해주세요."
             )
 
             openai_response = client.chat.completions.create(
