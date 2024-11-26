@@ -2,7 +2,7 @@
     <div v-if="Rivew_id && reviewInfo" class="container">
         <div class="review-head">
             <div class="user-info">
-                <RouterLink :to="{name:'otherprofile', params:{ user_id: reviewInfo.review.user } }" class="link" style="color: white;">
+                <RouterLink :to="{name:'profile', params:{ user_id: reviewInfo.review.user } }" class="link" style="color: white;">
                     {{ reviewInfo.review.nickname }}
                 </RouterLink>
                 <p class="movie-title">

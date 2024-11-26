@@ -100,7 +100,7 @@ const SignUp = function() {
 }
 .custom-input:hover::placeholder {
     color: #61FBFF;
-}f
+}   
 button {
     width: 100%;  
     max-width: 400px; 

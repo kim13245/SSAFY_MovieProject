@@ -10,7 +10,7 @@
             </div>
         </div>
         <RouterLink :to="{name:'review',params:{review_id:props.Rivew.id}}">상세히 보기</RouterLink>
-        <button class="button" @click="DeleteRivews()">삭제</button>
+        <button v-if="userInfo.id === store.userId" class="button" @click="DeleteRivews()">삭제</button>
     </div>
 </template>
 
