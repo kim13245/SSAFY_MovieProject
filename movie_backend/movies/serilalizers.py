@@ -35,7 +35,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ('id', 'title', 'belong_to_collection', 'original_title', 'release_date', 'overview', 'runtime',
-                  'popularity', 'vote_average', 'poster_path', 'backdrop_path', 'budget', 'revenue', 'adult', 'status',
+                  'popularity', 'vote_average', 'poster_path', 'backdrop_path', 'budget', 'revenue', 'adult', 'status', 'trailer',
                   'homepage', 'imdb_id', 'tagline', 'origin_country', 'spoken_languages', 'user_rating', 'genres', 'cast', 'crew', 'is_kept')
 
     def get_is_kept(self, obj):
