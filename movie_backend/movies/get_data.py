@@ -1,6 +1,6 @@
 import requests
+from movie_manage.apikey import API_KEY
 
-API_KEY = 'cd8bc71b153e2ca169a6dca709dbb877'
 BASE_URL = 'https://api.themoviedb.org/3'
 YOUTUBE_API_KEY=''
 def get_genres():

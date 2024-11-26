@@ -4,11 +4,10 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from movies.models import Movie, Genre, Emotion
-from movies.serilalizers import MovieListSerializer
-import openai
+from movie_manage.apikey import openAPI_KEY
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key=openAPI_KEY)
 
 class ChatbotView(APIView):
     permission_classes = [AllowAny]
