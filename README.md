@@ -8,7 +8,7 @@
 2. 기술 스택
 3. 주요 기능
 4. 설치 및 실행 방법
-5. ERD 및 명세서
+5. ERD & UserFlow
 6. 프로젝트 후기
 
 ## 1. 프로젝트 소개
@@ -159,6 +159,9 @@ npm install
 npm run serve
 
 ```
+## 5. ERD & UserFlow
+![ERD](/uploads/92d6638832a02f00293758e73200d9fd/ERD.png)
+
 
 ## 6. 프로젝트 후기
 
