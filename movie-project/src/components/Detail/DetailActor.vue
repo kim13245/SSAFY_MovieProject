@@ -1,7 +1,8 @@
 <template>
     <div class="container">
         <div class="profile-img">
-            <img :src="imageUrl" alt="">
+            <img :src="imageUrl" alt="" v-if="imageUrl">
+            <img src="@/assets/profile/profile-actore.png" alt="" v-else>
         </div>
         <div class="profie-text">
             <p class="name">{{ credit.name }}</p>
@@ -11,13 +12,19 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
+
 const props = defineProps({
     credit:Object,
 })
 
 const Base_URL = 'https://image.tmdb.org/t/p/original'
-let imageUrl = `${Base_URL}${props.credit.profile_path}`
-
+const imageUrl = ref(null)
+onMounted(() => {
+    if(props.credit.profile_path) {
+        imageUrl.value = `${Base_URL}${props.credit.profile_path}` 
+    }
+})
 
 </script>
 

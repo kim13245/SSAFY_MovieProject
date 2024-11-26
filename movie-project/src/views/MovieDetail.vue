@@ -44,14 +44,17 @@
                                 </div>
                             </div>
                             <!-- Youtube!!!!!!!!!!!!! 모달 기능 -->
-                            <div v-if="currentVideoId">
-                                <button @click="openModal(currentVideoId)">영상 보기</button>
+                            <!-- <div v-if="currentVideoId">
+                                <div @click="openModal(currentVideoId)" class="tag-img">
+                                    <img src="@/assets/moviedetail/youtube.png" alt="tag-img" />
+                                </div>
+                                <p style="color: #6c757d; font-size: 0.8em;">트레일러 시청</p>
                                 <Youtube
                                 :visible="isModalVisible"
                                 :videoId="currentVideoId"
                                 @close="isModalVisible = false"
                                 />
-                            </div>
+                            </div> -->
                         </div>
                         <div class="score">
                             <div class="score-point">
@@ -580,14 +583,17 @@ const wantMovie = function() {
     border: 1px solid #323232;
     border-radius: 10px;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tag-img:hover {
     border: 1px solid #61FBFF;
     box-shadow: 0px 0px 9px rgba(120, 206, 232, 0.802);
 }
 .tag-img img {
-    width: 100%;
-    height: 100%
+
+    height: 100%;
 }
 .comment {
     display: flex;

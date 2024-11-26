@@ -11,7 +11,7 @@
                         {{ comment.content }}
                     </p>
                 </div>
-                <button @click="deleteComment(comment.id)" class="comment-button">삭제</button>
+                <button v-if="userInfo.id === store.userId" @click="deleteComment(comment.id)" class="comment-button">삭제</button>
             </div>
         </div>
     </div>

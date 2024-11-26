@@ -2,9 +2,7 @@ import requests
 
 API_KEY = 'cd8bc71b153e2ca169a6dca709dbb877'
 BASE_URL = 'https://api.themoviedb.org/3'
-# YOUTUBE_API_KEY='AIzaSyDFUp9bwjMwxDIneBmCbY7z4cFrKIflrOI'
-# YOUTUBE_API_KEY='AIzaSyDKuuARGfk3wwiOEJ3CwGL8heye64UpPz4'
-YOUTUBE_API_KEY='AIzaSyANvthbCIvkd64ZPzRJZl4rRDlAgSWRFxM'
+YOUTUBE_API_KEY=''
 def get_genres():
     # 영화 장르 목록 가져오기
     url = f"{BASE_URL}/genre/movie/list"
