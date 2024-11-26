@@ -1,6 +1,14 @@
 <template>
-    <div class="head">
-        <h1>오늘 하루는 어떤 하루였나요?</h1>
+    <div class="info">
+        <div class="back">
+            <h1 class="backfont">Please tell me your feelings.</h1>
+        </div>
+        <div class="info">
+            <p style="font-size: 1.1em; color: #999;">
+              지금 느끼는 감정을 말해주세요. <br>
+              당신에게 딱 맞는 영화와 이야기를 찾아드릴게요.
+            </p>
+        </div>
     </div>
     <div class="MovieList" v-if="store.MindMoveList">
         <MindMoviePoster v-for="movie in store.MindMoveList" :key="movie.id" :movie="movie" class="movie-poster"/>
@@ -116,4 +124,33 @@ $color: #6138D8;
   }
 }
 
+
+/* 여기서 부터 공용 */
+.info {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+.backfont {
+    font-size: 3vw;
+    opacity: 10%;
+}
+.mind {
+    display: flex;
+    gap: 0.5em;
+    margin-bottom: 30px;
+}
+.mind p {
+    text-align: center;
+    min-width: 80px;
+    display: inline-block;
+    padding: 0.6em 1em;
+    border-radius: 50px;
+    background-color: #6c757d;
+}
 </style>

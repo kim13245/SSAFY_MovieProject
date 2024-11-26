@@ -37,7 +37,7 @@ class MovieListView(APIView):
 
 
 class MovieDetailView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -132,20 +132,20 @@ class MovieDetailView(APIView):
                 )
                 # 해당 영화에 제작진 추가
                 movie.crew.add(crew)
-        # 디버깅을 위해 반환값 출력 추가
-        trailer_data = get_movie_trailer(movie.title)
-        print("Trailer Data:", trailer_data)  # 실제로 어떤 데이터가 오는지 확인
+        # # 디버깅을 위해 반환값 출력 추가
+        # trailer_data = get_movie_trailer(movie.title)
+        # print("Trailer Data:", trailer_data)  # 실제로 어떤 데이터가 오는지 확인
 
-        # 데이터 형태에 따른 안전한 처리
-        if isinstance(trailer_data, dict) and 'videoId' in trailer_data:
-            trailer_id = trailer_data['videoId']
-            movie.trailer = trailer_id
-            movie.save()
-        else:
-            print(f"'{movie.title}' 영화의 트레일러를 찾을 수 없습니다.")
-            # 트레일러를 찾지 못한 경우 None으로 설정하거나 건너뛰기
-            movie.trailer = None
-            movie.save()
+        # # 데이터 형태에 따른 안전한 처리
+        # if isinstance(trailer_data, dict) and 'videoId' in trailer_data:
+        #     trailer_id = trailer_data['videoId']
+        #     movie.trailer = trailer_id
+        #     movie.save()
+        # else:
+        #     print(f"'{movie.title}' 영화의 트레일러를 찾을 수 없습니다.")
+        #     # 트레일러를 찾지 못한 경우 None으로 설정하거나 건너뛰기
+        #     movie.trailer = None
+        #     movie.save()
         reviews = Review.objects.filter(movie=movie_id).select_related('user')
         movie_serializer = MovieDetailSerializer(
             movie, context={'request': request})

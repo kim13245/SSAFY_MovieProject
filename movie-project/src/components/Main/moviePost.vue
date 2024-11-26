@@ -1,6 +1,7 @@
 <template>
     <div class="posterItem">
-        <img :src="imageUrl" alt="img">
+        <img :src="imageUrl" alt="img" v-if="imageUrl">
+        <img src="@/assets/main/nonposter.png" alt="non-img" v-else>
         <p>{{ props.movie.title }}</p>
         <p class="remainingDays">D-{{ remainingDays }}</p>
         <p class="daytitleP">극장 <span class="daytitleSpan">{{ year }}.{{ month }}.{{ day }}</span></p>
@@ -8,12 +9,14 @@
 </template>
 c
 <script setup>
+import { onMounted, ref } from 'vue';
+
 const props = defineProps({
     movie:Object,
 })
 
 const Base_URL = 'https://image.tmdb.org/t/p/w300'
-const imageUrl = `${Base_URL}${props.movie.poster_path}`
+const imageUrl = ref(null)
 
 const releaseDate = props.movie.release_date
 const today = new Date()
@@ -25,6 +28,13 @@ const day = String(releaseDateObj.getDate()).padStart(2,'0')
 
 const timeDiff = releaseDateObj - today
 const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24))
+
+onMounted(() => {
+    if(props.movie.poster_path) {
+        imageUrl.value = `${Base_URL}${props.movie.poster_path}`
+    }
+})
+
 
 </script>
 
