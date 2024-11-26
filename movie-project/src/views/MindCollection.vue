@@ -165,7 +165,7 @@ const checkComponents = ref('base')
 
 /* motion */
 .check {
-    width: 200px;
+    width: 210px;
     text-align: center;
     cursor: pointer;
 }
