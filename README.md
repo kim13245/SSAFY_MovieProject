@@ -160,8 +160,10 @@ npm run serve
 
 ```
 ## 5. ERD & UserFlow
+### ERD
 ![ERD](/uploads/92d6638832a02f00293758e73200d9fd/ERD.png)
-
+### UserFlow
+![userflow](/uploads/3759dbcc9630f7bb4f3750555ab5058c/userflow.png)
 
 ## 6. 프로젝트 후기
 
