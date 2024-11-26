@@ -45,6 +45,21 @@ const getComments = function() {
     })
 }
 
+const deleteComment = function(CommentId) {
+    axios({
+        method:'delete',
+        url:`http://127.0.0.1:8000/api/v1/movies/comments/${CommentId}`,
+        headers: {
+            Authorization: `Token ${store.Token}`, // 인증 토큰 추가
+        },
+    }).then((res) => {
+        console.log(res)
+        comments.value = comments.value.filter(comment => comment.id !== CommentId);
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
 onMounted( async() => {
     try{
         await getComments()
