@@ -70,4 +70,80 @@
 - 키워드
     - 감정적, 감성적, 직관적, 몰입, 개인화된 추천
 
+### 기술 스택
+#### Backend
+- Django :
+    - DRF (Django Rest Framework)를 사용한 API 설계
+    - CBV (Class-Based View)를 활용한 구조화된 코드
+    - DRF 문서화를 통해 API 명세 제공
+#### Frontend
+- Vues.js :
+    - Pinia를 사용한 상태 관리
+    - Axios를 통한 백엔드 API 호출
+    - JQuery 및 Slick을 활용한 UI 효과
+#### 사용된 API
+- TMDB API: 영화 데이터 (세부 정보, 장르, 평점 등) 제공
+- OpenAI API: 사용자의 입력 감정을 기반으로 영화 추천
 ## 2. 주요 기능
+1. 영화 메인 페이지
+
+    - 개봉 예정작과 최신 리뷰를 한눈에 볼 수 있습니다.
+
+2. 감정 추천 페이지
+
+    - 감정별로 분류된 영화 목록을 제공합니다.
+    - 예: "행복한 감정" → 코미디, 가족, 음악 장르의 영화.
+
+3. 영화 세부 정보 페이지
+
+    - 영화의 세부 정보를 확인할 수 있습니다.
+        - TMDB API로부터 가져온 정보 (제목, 줄거리, 배우 등)
+        - 사용자 댓글 기능 (좋아요 포함)
+        - 사용자 프로필 페이지
+
+4. 사용자 개인화 기능 제공:
+    - 팔로워 및 팔로잉 관리
+    - 찜한 영화, 작성한 리뷰, 댓글 기록 확인
+    - 감정을 바탕으로 하는 영화 추천 페이지
+
+5. 감정 분석 기능 제공
+    - 사용자가 감정을 입력하면 OpenAI를 통해 해당 감정을 분석하여 적합한 영화를 추천.
+
+## 3. 설치 및 실행 방법
+### 필수 요건
+- Python 3.9 이상
+- Node.js 16.x 이상
+- npm 6.x 이상
+### 설치 과정
+1. 백엔드(Django) 설정
+```bash
+
+# 저장소 클론
+git clone https://github.com/username/project-name.git
+cd project-name/backend
+
+# 가상 환경 생성 및 활성화
+python -m venv venv
+source venv/bin/activate  
+# Windows: venv\Scripts\activate
+
+# 의존성 설치
+pip install -r requirements.txt
+
+# 서버 실행
+python manage.py runserver
+```
+2. 프론트엔드(Vue.js) 설정
+
+```bash
+코드 복사
+cd ../frontend
+
+# 의존성 설치
+npm install
+
+# 개발 서버 실행
+npm run serve
+
+```
+3. 브라우저에서 http://localhost:8000 (백엔드) 및 http://localhost:5173 (프론트엔드)로 접속.
