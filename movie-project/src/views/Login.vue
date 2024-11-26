@@ -113,7 +113,7 @@ getRandomMovieImage().then((imageUrl) => {
     right: 0;
     bottom: 0;
     background: linear-gradient(to bottom, rgba(0,13,17, 1), rgba(0,13,17, 0.8) 30%, rgba(0,13,17, 0.5) 50%, rgba(0,13,17, 0.3) 80%, rgba(0,13,17, 0));
-    top: 55px; /* Nav의 높이를 고려하여 그라디언트를 60px 아래로 시작 */
+    
     pointer-events: none; 
     z-index: 1;
 }
