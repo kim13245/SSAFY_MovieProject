@@ -15,9 +15,9 @@
                                 <div class="name-info">
                                     <h1 style="color: #61FBFF;">{{ userInfo.nickname }}</h1>
                                     <p>{{ userInfo.email }}</p>
-                                    <span @click="out" style="border: 1px solid #333; cursor: pointer;">
+                                    <div @click="out" style="cursor: pointer;">
                                         <p>회원 탈퇴</p>
-                                    </span>
+                                    </div>
                                 </div>
                                 <div class="follow-info-master">
                                     <div class="follow-info">
@@ -258,6 +258,8 @@ onMounted(async () => {
     padding-bottom: 1.5em;
     border-bottom: 1px solid #323232;
 }
+.name-info {
+}
 .name-info p {
     font-size: 0.8em;
     color: #888;
@@ -273,7 +275,7 @@ onMounted(async () => {
     background-color: #000d12;
     border: 1px solid #323232;
     padding: 0.5em;
-    width: 80px;
+    width: 100px;
     border-radius: 10px;
     align-items: center;
     justify-content: center;
@@ -284,7 +286,7 @@ onMounted(async () => {
     background-color: #000d12;
     border: 1px solid #323232;
     padding: 0.5em;
-    width: 80px;
+    width: 100px;
     border-radius: 10px;
     align-items: center;
     justify-content: center;
