@@ -232,7 +232,7 @@ const goDetail = function(movieId) {
 
 /* Animation classes */
 .animate-enter {
-    transition: all 0.3s ease-out;
+    transition: all 0.6s ease-out;
 }
 
 .enter-from {
