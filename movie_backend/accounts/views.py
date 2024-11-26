@@ -195,7 +195,7 @@ class MyProfileView(APIView):
     def put(self, request):
         user = request.user
         input_data = request.data
-
+    
         user.user_profile = input_data.get('user_profile', user.user_profile)
         user.email = input_data.get('email', user.email)
         user.nickname = input_data.get('nickname', user.nickname)
