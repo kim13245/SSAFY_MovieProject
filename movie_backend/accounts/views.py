@@ -1,4 +1,5 @@
 # Django REST Framework(DRF)에서 제공하는 클래스 기반 뷰(Class-Based View, CBV)의 기본 클래스
+import re
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.sessions.models import Session
@@ -60,19 +61,35 @@ class RegisterView(APIView):
 
         if not username or not password or not nickname:
             return Response({"error": "아이디 혹은 패스워드 혹은 프로필 이름 입력이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(username=username).exists():
+        if email and User.objects.filter(username=username).exists():
             return Response({"error": "이미 사용 중인 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email=email).exists():
             return Response({"error": "이미 사용 중인 이메일입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        elif not email:
+            return Response({"error": "이메일을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            return Response({"error": "유효하지 않은 이메일 형식입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
         if User.objects.filter(nickname=nickname).exists():
             return Response({"error": "이미 사용 중인 프로필 이름입니다."}, status=status.HTTP_400_BAD_REQUEST)
-        user = User.objects.create(
-            username = username,
-            nickname = nickname,
-            password = make_password(password),
-            email = email,
-        )
-        return Response(status=status.HTTP_201_CREATED)
+        if len(password) < 8:
+            return Response({"error": "비밀번호는 최소 8자 이상이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if not any(char.isdigit() for char in password):
+            return Response({"error": "비밀번호에 숫자가 포함되어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if not any(char.isalpha() for char in password):
+            return Response({"error": "비밀번호에 영문자가 포함되어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.create(
+                username = username,
+                nickname = nickname,
+                password = make_password(password),
+                email = email,
+            )
+            return Response(status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": f"서버 오류: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
 
 # 로그인
 class LoginView(APIView):

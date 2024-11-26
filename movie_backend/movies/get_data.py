@@ -2,7 +2,9 @@ import requests
 
 API_KEY = 'cd8bc71b153e2ca169a6dca709dbb877'
 BASE_URL = 'https://api.themoviedb.org/3'
-
+# YOUTUBE_API_KEY='AIzaSyDFUp9bwjMwxDIneBmCbY7z4cFrKIflrOI'
+# YOUTUBE_API_KEY='AIzaSyDKuuARGfk3wwiOEJ3CwGL8heye64UpPz4'
+YOUTUBE_API_KEY='AIzaSyANvthbCIvkd64ZPzRJZl4rRDlAgSWRFxM'
 def get_genres():
     # 영화 장르 목록 가져오기
     url = f"{BASE_URL}/genre/movie/list"
@@ -71,3 +73,25 @@ def serch_movie(title):
     response = requests.get(url, params=params)
     response.raise_for_status()
     return response.json()
+
+def get_movie_trailer(title):
+    url = "https://www.googleapis.com/youtube/v3/search"
+    params = {
+        'part': "snippet",
+        'q': f'{title} 공식 트레일러',
+        'type': "video",
+        'key': YOUTUBE_API_KEY,
+        'maxResults': 1,
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    data = response.json()
+
+    if 'items' in data and data['items']:
+        item = data['items'][0]['id']['videoId']
+
+        return {
+            'videoId': item,
+        }   
+
+    return ''

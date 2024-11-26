@@ -3,14 +3,16 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import Movie, Cast, Crew, Emotion, Genre, Person, Review, Comment, ReviewComment, Collection
 from .serilalizers import MovieDetailSerializer, MovieListSerializer, ReviewSerializer, ReviewCommentSerializer, CollectionSerializer
-from .get_data import get_movie_details, get_cast_crew, serch_movie
+from .get_data import get_movie_details, get_cast_crew, serch_movie, get_movie_trailer
 from django.shortcuts import get_object_or_404
 
 # 영화 리스트 가져오기
+
 
 
 class MovieListView(APIView):
@@ -35,6 +37,7 @@ class MovieListView(APIView):
 
 
 class MovieDetailView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -49,6 +52,7 @@ class MovieDetailView(APIView):
             ),
         },
     )
+    
     def get(self, request, movie_id):
         movie = Movie.objects.filter(id=movie_id).first()
         credits_data = get_cast_crew(movie_id)
@@ -128,6 +132,20 @@ class MovieDetailView(APIView):
                 )
                 # 해당 영화에 제작진 추가
                 movie.crew.add(crew)
+        # 디버깅을 위해 반환값 출력 추가
+        trailer_data = get_movie_trailer(movie.title)
+        print("Trailer Data:", trailer_data)  # 실제로 어떤 데이터가 오는지 확인
+
+        # 데이터 형태에 따른 안전한 처리
+        if isinstance(trailer_data, dict) and 'videoId' in trailer_data:
+            trailer_id = trailer_data['videoId']
+            movie.trailer = trailer_id
+            movie.save()
+        else:
+            print(f"'{movie.title}' 영화의 트레일러를 찾을 수 없습니다.")
+            # 트레일러를 찾지 못한 경우 None으로 설정하거나 건너뛰기
+            movie.trailer = None
+            movie.save()
         reviews = Review.objects.filter(movie=movie_id).select_related('user')
         movie_serializer = MovieDetailSerializer(
             movie, context={'request': request})
@@ -672,3 +690,4 @@ class AllReviewView(APIView):
         reviews = Review.objects.all()
         serializer = ReviewSerializer(reviews, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    

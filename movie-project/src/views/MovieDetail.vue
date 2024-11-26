@@ -43,6 +43,15 @@
                                     <p style="color: #6c757d; font-size: 0.8em;">보고싶어요!</p>
                                 </div>
                             </div>
+                            <!-- Youtube!!!!!!!!!!!!! 모달 기능 -->
+                            <div v-if="currentVideoId">
+                                <button @click="openModal(currentVideoId)">영상 보기</button>
+                                <Youtube
+                                :visible="isModalVisible"
+                                :videoId="currentVideoId"
+                                @close="isModalVisible = false"
+                                />
+                            </div>
                         </div>
                         <div class="score">
                             <div class="score-point">
@@ -144,6 +153,10 @@ import { useRoute } from "vue-router";
 import tagActivateImg from '@/assets/moviedetail/tag-activate.png'
 import tagDeactivateImg from '@/assets/moviedetail/tag-deactivae.png'
 
+// Youtube!!!!!!!!!!!!! 모달 컴포넌트 추가
+import Youtube from "@/components/Youtube.vue";
+
+
 const store = useMovieStore();
 const route = useRoute();
 const movieId = route.params.movie_id;
@@ -165,6 +178,15 @@ const getTagImage = computed(() => {
     return isFavorite.value ? tagActivateImg : tagDeactivateImg
 })
 
+// Youtube!!!!!!!!!!!!! 트레일러 모달을 위한 변수, 메서드 설정 
+const isModalVisible = ref(false);
+const currentVideoId = ref("");
+
+const openModal = (videoId) => {
+  currentVideoId.value = videoId;
+  isModalVisible.value = true;
+};
+
 
 const getMovieDetails = async () => {
   try {
@@ -180,6 +202,10 @@ const getMovieDetails = async () => {
     movie.value = response.data.movie;
     credits.value = response.data.credits.cast;
     reviews.value = response.data.reviews;
+
+    // Youtube 데이터 처리
+    currentVideoId.value = movie.value.trailer
+
     // 별점 준거 그대로 넣어주기
     score.value = response.data.movie.is_kept.rating
     isFavorite.value = response.data.movie.is_kept.is_kept
@@ -201,6 +227,7 @@ const getMovieDetails = async () => {
     } else {
       console.warn("Reviews is not an array:", reviews.value);
     }
+
   } catch (error) {
     console.error(error);
   }
@@ -294,8 +321,6 @@ const wantMovie = function() {
 }
 
 // id title vote_vaerage, movies
-
-
 
 
 // 리뷰 작성 placeholder
