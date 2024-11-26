@@ -132,8 +132,12 @@
             </div>
             <div class="rivew-list">
                 <h1>리뷰</h1>
-                <div class="rivew-list-items">
+                <div class="rivew-list-items" v-if="reviews.length !== 0">
                     <ReviewItem class="rivew-list-item" v-for="riview in reviews" :key="riview.id" :riview="riview"/>
+                </div>
+                <div v-else class="review-empty">
+                    <p>현재 작성된 리뷰가 없습니다</p>
+                    <p>여러분의 생각을 작성해주세요.</p>
                 </div>
                 <div>
             </div>
@@ -477,8 +481,19 @@ const wantMovie = function() {
 .rivew-list-item {
     width: calc((100% - 2em) / 3); 
 }
-
-
+.review-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.review-empty p {
+    color: #666;
+}
+.review-empty p:first-child {
+    margin-top: 5em;
+    font-weight: bold;
+}
 
 /* 하단 info */
 .detail-movie {
