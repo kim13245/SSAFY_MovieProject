@@ -8,7 +8,7 @@ from movies.serilalizers import MovieListSerializer
 import openai
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 class ChatbotView(APIView):
     permission_classes = [AllowAny]
@@ -34,7 +34,7 @@ class ChatbotView(APIView):
             )
 
             openai_response = client.chat.completions.create(
-                model="gpt-4",  # 모델명 수정
+                model="gpt-4o-mini",  # 모델명 수정
                 messages=[
                     {"role": "system", "content": "당신의 임무는 질문자의 감정을 파악하고 해당 감정에 맞는 영화를 추천하는 일입니다."},
                     {"role": "user", "content": prompt}

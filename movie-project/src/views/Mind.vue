@@ -69,49 +69,61 @@ const movie = ref(null)
 const Base_URL = 'https://image.tmdb.org/t/p/original'
 const imageUrl = ref(null)
 const router = useRouter()
-const checkComponents = ref('base')
-const getSearch = async function(moviename) {
-    axios({
-        method:'get',
-        url:`http://127.0.0.1:8000/api/v1/movies/movie_search/`,
-        params:{title:moviename}
-    }).then((res) => {
-        movies.value = res.data.results
-        movie.value = movies.value[0]
-        console.log(movie.value)
-        imageUrl.value = `${Base_URL}${movie.value.poster_path}`
-        
-    }).catch((err) => {
-        console.error(err)
-    })
-}
-
-const answerMarginTop = ref('400px')  // 기본 margin-top 값
-
-const getApi = async function() {
+const checkComponents = ref('')
+const getSearch = async (moviename) => {
     try {
-        isLoading.value = true
-        answer.value = null
-        answerMarginTop.value = '100px'  // margin-top 값 변경
         const res = await axios({
-            method:'post',
-            url:`http://127.0.0.1:8000/api/v1/chatbot/chat/`,
-            data: {
-                message:question.value
-            }
-        }).then((res) => {
-            // console.log(res.data)
-            answer.value = res.data
-            checkComponents.value = answer.value.user_emotion
-            formview.value = false
-        })
-        await getSearch(answer.value.recommend)
+            method: 'get',
+            url: `http://127.0.0.1:8000/api/v1/movies/movie_search/`,
+            params: { title: moviename },
+        });
+        movies.value = res.data.results || []; // 응답 데이터가 없을 경우 기본값 설정
+        movie.value = movies.value[0] || {};   // 첫 번째 영화 선택 (없을 경우 빈 객체)
+
+        if (movie.value.poster_path) {
+            imageUrl.value = `${Base_URL}${movie.value.poster_path}`;
+        } else {
+            imageUrl.value = require('@/assets/mind/space.jpg'); // 기본 이미지 설정
+        }
+        console.log(movie.value);
     } catch (err) {
-        console.error(err)
-    } finally {
-        isLoading.value = false
+        console.error('영화 검색 중 오류 발생:', err);
     }
-}
+};
+
+const answerMarginTop = ref('500px'); // 기본 margin-top 값
+
+const getApi = async () => {
+    try {
+        isLoading.value = true;          // 로딩 시작
+        answer.value = null;             // 기존 답변 초기화
+        answerMarginTop.value = '100px'; // margin-top 값 변경
+
+        // Chat API 호출
+        const res = await axios({
+            method: 'post',
+            url: `http://127.0.0.1:8000/api/v1/chatbot/chat/`,
+            data: { message: question.value },
+        });
+        
+        console.log(res.data);
+        answer.value = res.data;                        // 응답 데이터 저장
+        checkComponents.value = answer.value.user_emotion; // 사용자 감정 데이터 설정
+        formview.value = false;                         // 폼 숨김
+
+        // 추천 영화 검색 호출
+        if (answer.value.recommend) {
+            await getSearch(answer.value.recommend);
+        } else {
+            console.warn('추천 데이터가 없습니다.');
+        }
+    } catch (err) {
+        console.error('챗봇 API 호출 중 오류 발생:', err);
+    } finally {
+        isLoading.value = false; // 로딩 종료
+    }
+};
+
 
 const goDetail = function(movieId) {
     router.push({name:'detail', params:{movie_id:movieId}})
