@@ -5,7 +5,7 @@
                 <li>
                     <div class="img">
                         <RouterLink :to="{name:'home'}">
-                            <img src="@/assets/logo/testLogo.jpg" alt="test_img">
+                            <img src="@/assets/logo/logo.png" alt="test_img">
                         </RouterLink>
                     </div>
                 </li>
@@ -101,6 +101,7 @@ nav {
 
     /* 그리드 */
     display: grid;
+    grid-template-rows: auto auto;
     grid-template-columns: 1fr repeat(10, 1fr) 1fr; /* 양옆에 1등분씩 여백, 가운데 10등분 */
     gap: 0;
     padding: 0;
@@ -136,6 +137,7 @@ ul {
     gap: 2em; /* 항목 간 간격 (선택 사항) */
     grid-column: 4 / 10; /* 2번째 칸부터 12번째 칸까지 차지 */
     width: 100%;
+    margin-top: 1em;
 }
 
 .li_center {
