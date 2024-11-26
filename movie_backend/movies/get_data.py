@@ -1,5 +1,5 @@
 import requests
-from .apikey import API_KEY
+from movie_manage.apikey import API_KEY
 
 BASE_URL = 'https://api.themoviedb.org/3'
 YOUTUBE_API_KEY=''
