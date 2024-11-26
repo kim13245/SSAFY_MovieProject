@@ -95,8 +95,6 @@ const userid = store.userId
 
 <style scoped>
 nav {
-    background-color: f9f9f9;
-    border-bottom: 1px solid #00000026;
     padding: 1em;
 
     /* 그리드 */
