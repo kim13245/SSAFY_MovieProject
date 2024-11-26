@@ -104,17 +104,20 @@
                                 <p>상영시간</p>
                                 <p class="info-box-maintext">{{ movie.runtime }} <span style="font-size: 0.6em; font-weight: 400;">분</span></p>
                             </div>
-                            <div class="info-box">
+                            <div v-if="movie.budget >= 1000000" class="info-box">
+                                <p>총 제작비</p>
+                                <p class="info-box-maintext">{{ (movie.budget)/1000000 }}M <span style="font-size: 0.6em; font-weight: 400;">$</span></p>
+                            </div>
+                            <div v-else class="info-box">
                                 <p>총 제작비</p>
                                 <p class="info-box-maintext">{{ movie.budget }} <span style="font-size: 0.6em; font-weight: 400;">$</span></p>
                             </div>
-
                             <!-- <div class="info-box">
                                 {{ movie.origin_country[0] }}
                             </div> -->
                             <div class="info-box">
                                 <p>인기지수</p>
-                                <p class="info-box-maintext">{{ movie.popularity }} <span style="font-size: 0.6em; font-weight: 400;">POINT</span></p>
+                                <p class="info-box-maintext">{{ (movie.popularity).toFixed(0) }} <span style="font-size: 0.6em; font-weight: 400;">P</span></p>
                             </div>
                         </div>
                     </div>
@@ -604,12 +607,13 @@ const wantMovie = function() {
     justify-content: space-between;
     gap: 0.6em;
     margin-top: 1em;
+    flex-wrap: wrap;
 }
 .info-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 33%;
+    width: calc((100% - 2em) / 3);
     text-align: center;
     background-color: #000d12;
     border: 1px solid #323232;

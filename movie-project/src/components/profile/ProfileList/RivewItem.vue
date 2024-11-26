@@ -67,6 +67,7 @@ const DeleteRivews = function () {
     color: white;
     padding: 0.4em;
     margin-left: 1em;
+    cursor: pointer;
 }
 .score {
     display: flex;
