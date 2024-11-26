@@ -17,10 +17,16 @@
                     <p>{{ answer.openai_response }}</p>
                 </div>
                 <div class="movie-post" v-if="answer" @click="goDetail(movie.id)">
-                    <div>
+                    <div v-if="imageUrl">
                         <img :src="imageUrl" alt="postr-img">
                     </div>
-                    <p>{{ movie.title }}</p>
+                    <p v-if="imageUrl">{{ movie.title }}</p>
+                    <div style="display: flex; flex-direction: column; border: none;">
+                        <p v-if="!imageUrl" class="next-title">'<span style="font-weight: 600; text-decoration: underline;">{{ answer.recommend }}</span>'<br>
+                        을 추천합니다. <br> 
+                        </p>
+                        <span v-if="!imageUrl" style="color: #777; font-size: 0.9em; line-height: 1; margin-top: 0.8em;">해당 영화는 현재 TMDB DB에 등록되어 있지 않습니다.</span>
+                    </div>
                 </div>
                 <div class="form-area" v-show="formview">
                     <form @submit.prevent="getApi" class="form">
@@ -215,6 +221,14 @@ const goDetail = function(movieId) {
     max-width: 70%;
     text-align: left;
 }
+.next-title {
+    border: 1px solid #61FBFF;
+    margin-right: 0;
+    float: right;
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    max-width: 100%;
+}
 
 /* Animation classes */
 .animate-enter {
@@ -290,6 +304,7 @@ button:hover {
     align-self: flex-end;
     width: 200px;
     cursor: pointer;
+
 }
 .movie-post div {
     border-radius: 10px;
