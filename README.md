@@ -70,7 +70,7 @@
 - 키워드
     - 감정적, 감성적, 직관적, 몰입, 개인화된 추천
 
-##2. 기술 스택
+## 2. 기술 스택
 #### Backend
 - Django :
     - DRF (Django Rest Framework)를 사용한 API 설계
