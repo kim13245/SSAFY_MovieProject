@@ -17,7 +17,7 @@
                     <p>{{ answer.openai_response }}</p>
                 </div>
                 <div class="movie-post" v-if="answer" @click="goDetail(movie.id)">
-                    <div v-if="imageUrl">
+                    <div v-if="imageUrl" class="movie-post-img">
                         <img :src="imageUrl" alt="postr-img">
                     </div>
                     <p v-if="imageUrl">{{ movie.title }}</p>
@@ -302,9 +302,12 @@ button:hover {
 
 .movie-post {
     align-self: flex-end;
-    width: 200px;
+
     cursor: pointer;
 
+}
+.movie-post-img {
+    width: 200px;
 }
 .movie-post div {
     border-radius: 10px;
