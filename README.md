@@ -1,7 +1,7 @@
 ![header](https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=MOODFLEX&fontColor=61FBFF&descAlign=96&descAlignY=91)
 
 # SSAFY 관통 프로젝트
-
+---
 ### 목차
 
 1. 프로젝트 소개
