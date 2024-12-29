@@ -197,11 +197,12 @@ npm run serve
 
 ### ERD
 
-![ERD](/uploads/92d6638832a02f00293758e73200d9fd/ERD.png)
+<img width="413" alt="ERD" src="https://github.com/user-attachments/assets/15f717db-0c63-403e-8732-efe961fe780a" />
 
 ### UserFlow
 
-![UserFlow](/uploads/d9118d9d2d765f15d0630536875ab244/UserFlow.png)
+![userflow](https://github.com/user-attachments/assets/c7d0f319-2b81-4c31-9606-e6da30f77c81)
+ets/729dad5a-1fc7-4d82-90fa-ad8e027a0c88" />
 
 ## 6. 프로젝트 후기
 
