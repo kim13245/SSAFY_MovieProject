@@ -202,7 +202,7 @@ npm run serve
 ### UserFlow
 
 ![userflow](https://github.com/user-attachments/assets/c7d0f319-2b81-4c31-9606-e6da30f77c81)
-ets/729dad5a-1fc7-4d82-90fa-ad8e027a0c88" />
+
 
 ## 6. 프로젝트 후기
 
