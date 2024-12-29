@@ -105,16 +105,16 @@
 ## 3. 주요 기능
 
 1. 영화 메인 페이지
-   ![image](https://github.com/user-attachments/assets/069fafbb-5e2a-4b70-8282-9e0f5bcf4557)
+   ![로그인](https://github.com/user-attachments/assets/2623585c-9488-4b6d-872d-51a77e9db614)
 
-   ![image](https://github.com/user-attachments/assets/35335780-08fc-4fc3-88c9-731b22f3e09d)
+   ![메인페이지](https://github.com/user-attachments/assets/46c73606-8bf3-472c-b16e-2d1e608d1179)
 
 
 
    - 개봉 예정작과 최신 리뷰를 한눈에 볼 수 있습니다.
 
 3. 감정 추천 페이지
-   ![image](https://github.com/user-attachments/assets/67a85a7e-6fb4-42e3-8c83-d7172c21e031)
+   ![감정추천](https://github.com/user-attachments/assets/34811567-12b3-446a-811a-02d537e4b453)
 
 
 
@@ -122,7 +122,7 @@
    - 예: "행복한 감정" → 코미디, 가족, 음악 장르의 영화.
 
 4. 영화 세부 정보 페이지
-   ![image](https://github.com/user-attachments/assets/c04b964e-1cab-4613-8226-93507b289423)
+   ![영화검색](https://github.com/user-attachments/assets/e8c48be5-0fe8-4541-bb28-9af86a0583f1)
 
 
    - 영화의 세부 정보를 확인할 수 있습니다.
@@ -131,7 +131,7 @@
      - 사용자 프로필 페이지
 
 5. 사용자 개인화 기능 제공:
-   ![image](https://github.com/user-attachments/assets/a03658d4-31d3-4069-aa20-74b4b1c844ac)
+   ![프로필 페이지](https://github.com/user-attachments/assets/6e2f1012-ffea-444f-bb35-b54c1b909d10)
 
 
    - 팔로워 및 팔로잉 관리
@@ -139,9 +139,9 @@
    - 감정을 바탕으로 하는 영화 추천 페이지
 
 6. 감정 분석 기능 제공
-   ![image](https://github.com/user-attachments/assets/03ca784d-f71b-4ba8-a5a9-0e8358dd580a)
+   <img width="1680" alt="감정분석1" src="https://github.com/user-attachments/assets/673d4c28-1c7f-40ea-bb33-3a9f0eee073c" />
 
-   ![image](https://github.com/user-attachments/assets/f4b1a964-9340-48d8-8644-0487c59b8922)
+   <img width="1680" alt="감정분석2" src="https://github.com/user-attachments/assets/729dad5a-1fc7-4d82-90fa-ad8e027a0c88" />
 
    - 사용자가 감정을 입력하면 OpenAI를 통해 해당 감정을 분석하여 적합한 영화를 추천.
 
